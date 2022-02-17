@@ -4,7 +4,7 @@
 * It is advised to install the application on a device with a dedicated graphics card.
     * Current GPU specifications: NVIDEA Quadro P620 GPU
 
-* Installation Guide: 
+* Installation Guide: In zipped folder above. 
 
 ## User Guide
 **Application startup**
