@@ -1,0 +1,7 @@
+easyocr
+opencv-python-headless==4.5.2.52
+opencv-python==4.5.2.52
+numpy
+matplotlib
+streamlit
+streamlit-cropper
