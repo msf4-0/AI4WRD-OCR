@@ -3,7 +3,7 @@
 * This app is currently only supported on Windows.
 * It is advised to install the application on a device with a dedicated graphics card.
     * Current GPU specifications: NVIDEA Quadro P620 GPU
-    
+
 * Installation Guide: 
 
 ## User Guide
@@ -11,6 +11,8 @@
 1. When starting up the app, you will arrive at the home page, "Load Frame". This page loads the first frame of the video capture from your video device. 
 2. Check the "Run" checkbox to load the first frame of your video capture.
 3. A message will appear when the frame is fully loaded. You may proceed to the next page when the frame has loaded.
+
+![](Images/LoadFrameImg.jpg)
 
 **Cropping tool**
 1. In the "Crop" page, the loaded frame will be visible to you with a blue box.
@@ -22,7 +24,7 @@
 
 **Livestream Loading**
 1.  In the "Load Livestream" page, select "Done Crop" to start loading the livestream. 
-2. A message will appear once the livestream is loaded. You may proceed to the final page, OCR livestream once the message is displayed. 
+2. A message will appear once the livestream is loaded. You may proceed to the final page, "OCR livestream" once the message is displayed. 
 
 **OCR on Livestream**
 1. In the "OCR Livestream" page, the livestream from your capture device will be visible at the top of the page. 
