@@ -44,7 +44,9 @@
 5. Note that the zoom tool is still available for you to enlarge crops. 
 
 ![](Images/OCRLivestreamImg.jpg)
-![](Images/OCRCropLivestreamImg.jpgpg)
+![](Images/OCRCropLivestreamImg.jpg)
+
+
 
 
 
