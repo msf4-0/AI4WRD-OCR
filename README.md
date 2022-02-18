@@ -51,7 +51,7 @@
 
 
 ## Citation
-streamlit-cropper : https://github.com/turner-anderson/streamlit-cropper 
+streamlit-cropper component: https://github.com/turner-anderson/streamlit-cropper 
 
 
 
