@@ -33,17 +33,21 @@ def mainApp():
     
 
     if run:
+
+        if 'vid' not in st.session_state:
+            st.session_state['vid'] = []
+
         if 'cap' not in st.session_state:
             status.subheader("Frame Loading...")
-            vid = cv2.VideoCapture(0)
+            st.session_state.vid = cv2.VideoCapture(0)
             # st.write("Video Capture done")
             # vid.set(3, 1920)
             # vid.set(4, 1080)
 
-            vid.set(3, 1280)
-            vid.set(4, 720)
+            st.session_state.vid.set(3, 1280)
+            st.session_state.vid.set(4, 720)
 
-            _, frame = vid.read()
+            _, frame = st.session_state.vid.read()
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             
             st.session_state['cap'] = frame
