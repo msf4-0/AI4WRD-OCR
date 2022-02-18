@@ -7,7 +7,7 @@
 * Installation Guide: In zipped folder above. 
 
 ## User Guide
-**Application startup**
+##### Application startup
 1. When starting up the app, you will arrive at the home page, "Load Frame". 
 2. This page loads the first frame of the video capture from your video device. 
 3. Check the "Run" checkbox to load the first frame of your video capture.
@@ -17,7 +17,7 @@
 
 
 
-**Cropping tool**
+##### Cropping tool
 1. In the "Crop" page, the loaded frame will be visible to you with a blue box.
 2. You may drag the blue box to crop text on the visible frame. 
 3. The OCR will be performed on these cropped sections of the live videostream on a later page. 
@@ -31,7 +31,7 @@
 
 
 
-**Livestream Loading**
+##### Livestream Loading
 1.  In the "Load Livestream" page, select "Done Crop" to start loading the livestream. 
 2. A message will appear once the livestream is loaded. You may proceed to the final page, "OCR livestream" once the message is displayed. 
 
@@ -39,7 +39,7 @@
 
 
 
-**OCR on Livestream**
+##### OCR on Livestream
 1. In the "OCR Livestream" page, the livestream from your capture device will be visible at the top of the page. 
 2. The livestream of the cropped sections will also appear below the main livestream along with the OCR result of each crop beneath it.
 3. The "Save Continuous to csv" button will allow you to continuously save new OCR data read from the crops into a csv file. 
