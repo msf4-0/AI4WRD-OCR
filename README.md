@@ -14,6 +14,7 @@
 4. A message will appear when the frame is fully loaded. You may proceed to the next page when the frame has loaded.
 
 ![](Images/loadFrameGIF.gif)
+https://user-images.githubusercontent.com/99723226/154652256-136cadb8-9301-4925-8be1-bad7955f312f.mp4
 
 
 
