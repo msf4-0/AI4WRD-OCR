@@ -12,7 +12,7 @@
 2. Check the "Run" checkbox to load the first frame of your video capture.
 3. A message will appear when the frame is fully loaded. You may proceed to the next page when the frame has loaded.
 
-![](Images/LoadFrameGIF.gif)
+![](Images/loadFrameGIF.gif)
 
 
 
@@ -24,7 +24,7 @@
 5. A zoom function is available on the sidebar for you to enlarge crops if the text appears to be too small.  Note that the OCR accuracy can be affected depending on the size and clarity of your cropped text. 
 6. Proceed to the next page when you have finished cropping. 
 
-![](Images/CropToolGIF.gif)
+![](Images/cropToolGIF.gif)
 
 
 
@@ -32,7 +32,7 @@
 1.  In the "Load Livestream" page, select "Done Crop" to start loading the livestream. 
 2. A message will appear once the livestream is loaded. You may proceed to the final page, "OCR livestream" once the message is displayed. 
 
-![](Images/LoadLivestreamGIF.gif)
+![](Images/loadLiveGIF.gif)
 
 
 
@@ -43,7 +43,7 @@
 4. The "Save to csv" button allows you to save all the previous OCR data that was obtained before clicking the "Save to csv" button. 
 5. Note that the zoom tool is still available for you to enlarge crops. 
 
-![](Images/OCRLivestreamGIF.gif)
+![](Images/OCRCropLivestreamGIF.gif)
 
 
 
