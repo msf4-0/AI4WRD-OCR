@@ -43,7 +43,7 @@ https://user-images.githubusercontent.com/99723226/154652861-25c9a5d2-d991-4075-
 6. The "Save Previous to csv" button allows you to save all the previous OCR data to a csv file. 
 7. The csv file will be saved under the folder in which you saved the Python program files. 
 8. Note that the zoom tool is still available for you to enlarge crops. 
-9. 
+
 https://user-images.githubusercontent.com/99723226/154652921-c9522fd2-6df0-4b29-9992-6d93ef3d956a.mp4
 
 
