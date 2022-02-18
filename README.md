@@ -50,6 +50,8 @@
 ![](Images/OCRCropLivestreamGIF.gif)
 
 
+## Citation
+streamlit-cropper : https://github.com/turner-anderson/streamlit-cropper 
 
 
 
