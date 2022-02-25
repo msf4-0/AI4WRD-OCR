@@ -25,12 +25,35 @@ def mainApp():
     
     st.header("HDMI Capture")
     
+    options = st.multiselect(
+            'Select languages to read',
+            ['English', 'Chinese'])
 
+    
+
+    
+
+    if 'lang' not in st.session_state:
+        st.session_state['lang'] = ""
+
+    if len(options) == 1:
+        if options[0] == "Chinese": 
+                st.session_state.lang = "Chn"
+                #st.write("Chinese selected")
+    elif len(options) == 2:
+        if options[1] == "Chinese":
+                st.session_state.lang = "Chn"
+                #st.write("Chinese selected")
+
+    #st.write('You selected:', options)
+        
+  
+    
     run = st.checkbox('Run')
     status = st.empty()
+    
     #FRAME_WINDOW2 = st.image([])
-    
-    
+     
 
     if run:
 
@@ -55,6 +78,10 @@ def mainApp():
             # st.session_state['cap'] = ImageGrab.grab(bbox=(115, 143, 1069, 1083))
             st.session_state['cap'] = Image.fromarray(frame)
             status.subheader("Frame loaded. Proceed to crop tool.")
+
+            
+
+    
 
         
 

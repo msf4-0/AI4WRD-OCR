@@ -18,7 +18,20 @@ def mainApp():
     if 'cropArr' not in st.session_state:
             st.session_state['cropArr'] = []
 
-    reader = easyocr.Reader(['en'], gpu=True)
+    if 'lang' not in st.session_state:
+        st.session_state['lang'] = ""
+
+
+
+    if st.session_state.lang == "Chn":
+        reader = easyocr.Reader(['ch_sim','en'], gpu=True)
+        #st.write("Reading Chinese")
+    elif st.session_state.lang == "":
+        reader = easyocr.Reader(['en'], gpu=True)
+        #st.write("Not reading chinese")
+
+
+
     skip_frame = True
 
     if 'data' not in st.session_state:
