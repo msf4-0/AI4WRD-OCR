@@ -3,15 +3,16 @@ import time
 import cv2 as cv
 import numpy as np
 
-cap = cv.VideoCapture(0)
+cap = cv.VideoCapture(1, cv.CAP_DSHOW)
 
 if not cap.isOpened():
     print("Cannot open camera")
     exit()
 
-# ret, frame = cap.read()
-#
-# cv.imwrite("image/i2.png", frame)
+ret, frame = cap.read()
+gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+
+cv.imwrite("image/i2.png", gray)
 
 
 img1 = cv.imread(cv.samples.findFile('image/i2.png'), cv.IMREAD_GRAYSCALE)
@@ -71,29 +72,31 @@ while "potato" == "potato" :
     detector = cv.SIFT_create()
     keypoints1, descriptors1 = detector.detectAndCompute(img1, None)
     keypoints2, descriptors2 = detector.detectAndCompute(img2, None)
+    if descriptors1 is not None and descriptors2 is not None:
+        # -- Step 2: Matching descriptor vectors with a FLANN based matcher
+        # Since SURF is a floating-point descriptor NORM_L2 is used
+        matcher = cv.DescriptorMatcher_create(cv.DescriptorMatcher_FLANNBASED)
+        knn_matches = matcher.knnMatch(descriptors1, descriptors2, 2)
 
-    # -- Step 2: Matching descriptor vectors with a FLANN based matcher
-    # Since SURF is a floating-point descriptor NORM_L2 is used
-    matcher = cv.DescriptorMatcher_create(cv.DescriptorMatcher_FLANNBASED)
-    knn_matches = matcher.knnMatch(descriptors1, descriptors2, 2)
+        # -- Filter matches using the Lowe's ratio test
+        ratio_thresh = 0.7
+        good_matches = []
+        for m, n in knn_matches:
+            if m.distance < ratio_thresh * n.distance:
+                good_matches.append(m)
+        print(len(good_matches))
+        matchRatio = len(good_matches) / (len(knn_matches))
+        print(matchRatio)
+        # -- Draw matches
+        img_matches = np.empty((max(img1.shape[0], img2.shape[0]), img1.shape[1] + img2.shape[1], 3), dtype=np.uint8)
+        cv.drawMatches(img1, keypoints1, img2, keypoints2, good_matches, img_matches,
+                       flags=cv.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
+        # -- Show detected matches
+        cv.imshow('Good Matches', img_matches)
 
-    # -- Filter matches using the Lowe's ratio test
-    ratio_thresh = 0.7
-    good_matches = []
-    for m, n in knn_matches:
-        if m.distance < ratio_thresh * n.distance:
-            good_matches.append(m)
-    print(len(good_matches))
-    matchRatio = len(good_matches) / (len(knn_matches))
-    print(matchRatio)
-    # -- Draw matches
-    img_matches = np.empty((max(img1.shape[0], img2.shape[0]), img1.shape[1] + img2.shape[1], 3), dtype=np.uint8)
-    cv.drawMatches(img1, keypoints1, img2, keypoints2, good_matches, img_matches,
-                   flags=cv.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
-    # -- Show detected matches
-    cv.imshow('Good Matches', img_matches)
-
-    cv.waitKey(1)
+        cv.waitKey(1)
+    else:
+        pass
     # time.sleep(1)
 
 
