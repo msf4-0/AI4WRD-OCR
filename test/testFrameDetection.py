@@ -8,6 +8,7 @@ import time
 
 
 
+
 def get_image(camera_choice):
     _, frame = cv2.VideoCapture(camera_choice, cv2.CAP_DSHOW).read()
     return frame
