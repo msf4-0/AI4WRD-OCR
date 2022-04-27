@@ -1,24 +1,21 @@
 import cv2
-import time
 import streamlit as st
-import numpy as np
-from PIL import ImageGrab
 from PIL import Image
-import matplotlib.pyplot as plt
-from streamlit_cropper import st_cropper
 
-x_topleft = []
-x_bottomright = []
-y_topleft = []
-y_bottomright = []
-cropArr = []
 
-FRAME_WINDOW = st.image([])
- 
+# x_topleft = []
+# x_bottomright = []
+# y_topleft = []
+# y_bottomright = []
+# cropArr = []
+#
+# FRAME_WINDOW = st.image([])
+
+
 def clearsessState():
-    # Delete all the items in Session state
-    for key in st.session_state.keys():
-        del st.session_state[key]
+    # # Delete all the items in Session state
+    # for key in st.session_state.keys():
+    #     del st.session_state[key]
     mainApp()
 
 
@@ -42,27 +39,25 @@ def get_available_devices():
         port_num += 1
         potential_cam.release()
 
-
     return available_devices
+
 
 def get_frame(camera_choice):
     # st.session_state.vid = cv2.VideoCapture(camera_choice, cv2.CAP_DSHOW)
     _, frame = st.session_state.vid.read()
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-    st.session_state['cap'] = frame
-
     # st.session_state['cap'] = ImageGrab.grab(bbox=(115, 143, 1069, 1083))
-    st.session_state['cap'] = Image.fromarray(frame)
+    # st.session_state['cap'].append(Image.fromarray(frame))]
+    st.session_state['cap'].append(frame)
 
-    st.caption("Frame loaded. Proceed to crop tool.")
-    FRAME_WINDOW3 = st.image([])
 
-    FRAME_WINDOW3.image(frame)
+    st.caption("Frame loaded.")
+    for i in range(len(st.session_state['cap'])):
+        st.image(st.session_state['cap'][i], caption=f'Frame number {i}')
 
 
 def mainApp():
-
     st.header("HDMI Capture")
 
     options = st.multiselect(
@@ -73,49 +68,50 @@ def mainApp():
         st.session_state['lang'] = ""
 
     if len(options) == 1:
-        if options[0] == "Chinese": 
-                st.session_state.lang = "Chn"
-                #st.write("Chinese selected")
+        if options[0] == "Chinese":
+            st.session_state.lang = "Chn"
+            # st.write("Chinese selected")
     elif len(options) == 2:
         if options[1] == "Chinese":
-                st.session_state.lang = "Chn"
-                #st.write("Chinese selected")
+            st.session_state.lang = "Chn"
+            # st.write("Chinese selected")
 
-    #st.write('You selected:', options)
-        
+    # st.write('You selected:', options)
+
     # print(options)
 
     available_devices = get_available_devices()
-    camera_choice = st.selectbox( 'Select Video Capture Device',    available_devices)
+    camera_choice = st.selectbox('Select Video Capture Device', available_devices)
     st.write("You selected camera number", camera_choice)
 
+    """
+    global components
+    """
+    if 'cap' not in st.session_state:
+        st.session_state['cap'] = []
+    if 'vid' not in st.session_state:
+        st.session_state['vid'] = []
 
     if len(available_devices) != 0:
         run = st.checkbox('Run')
         status = st.empty()
 
-        FRAME_WINDOW2 = st.image([])
+        frame_window2 = st.image([])
 
         if run:
-            if 'vid' not in st.session_state:
-                st.session_state['vid'] = []
-
-
             st.session_state.vid = cv2.VideoCapture(camera_choice, cv2.CAP_DSHOW)
             st.session_state.vid.set(3, 1280)
             st.session_state.vid.set(4, 720)
 
-            if 'cap' not in st.session_state:
-                pass
-                # status.subheader("Frame Loading...")
+            # if 'cap' not in st.session_state:
+            # status.subheader("Frame Loading...")
 
-                capture_screenshot = st.button("capture screenshot")
-                if capture_screenshot:
-                    # cv2.destroyAllWindows()
-                    get_frame(camera_choice)
-                    # status.subheader("Frame loaded. Proceed to crop tool.")
+            capture_screenshot = st.button("capture screenshot")
 
-
+            if capture_screenshot:
+                # cv2.destroyAllWindows()
+                get_frame(camera_choice)
+                # status.subheader("Frame loaded. Proceed to crop tool.")
 
             status.subheader("Video Preview")
             while run:
@@ -125,17 +121,4 @@ def mainApp():
 
                 _, frame = st.session_state.vid.read()
                 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                FRAME_WINDOW2.image(frame)
-
-
-
-
-
-
-
-            
-
-    
-
-        
-
+                frame_window2.image(frame)

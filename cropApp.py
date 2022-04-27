@@ -7,6 +7,8 @@ from PIL import Image
 import matplotlib.pyplot as plt
 from streamlit_cropper import st_cropper
 
+from processFrame import CropData
+
 x_topleft = []
 x_bottomright = []
 y_topleft = []
@@ -15,7 +17,13 @@ cropArr = []
 
 FRAME_WINDOW = st.image([])
 done1 = 0
-done2 = 0 
+done2 = 0
+
+
+# def preProcessFrames():
+#     crop_data_list = []
+#     for frame in st.session_state['cap']:
+#         st.session_state['crop_data_list'].append(CropData([], frame))
 
 def clearsessState():
     # Delete all the items in Session state
@@ -24,11 +32,12 @@ def clearsessState():
     del st.session_state['text']
     del st.session_state['d1']
 
-
     mainApp()
-    
+
 
 def mainApp():
+    # if 'crop_data_list' not in st.session_state:
+    #     preProcessFrames()
 
     st.header("Cropping Tool")
     realtime_update = st.sidebar.checkbox(label="Update in Real Time", value=True)
@@ -52,17 +61,13 @@ def mainApp():
 
     zoom = st.sidebar.slider('Zoom (%)', 100, 500)
 
-
     if 'd' not in st.session_state:
-        st.session_state['d']= {}
+        st.session_state['d'] = {}
 
-    #st.title("HDMI Capture")
-    run = st.checkbox('Run')
-    
-    #FRAME_WINDOW2 = st.image([])
+    # st.title("HDMI Capture")
+
+    # FRAME_WINDOW2 = st.image([])
     # vid = cv2.VideoCapture(0)
-
-
 
     # @st.cache(suppress_st_warning=True)
     # def firstFrame():
@@ -74,9 +79,8 @@ def mainApp():
     #     #cap_arr = np.array(cap)
     #     #gray = cv2.cvtColor(cap_arr, cv2.COLOR_RGB2GRAY)
     #     return cap
-        
-        
-        #st.image(cap)
+
+    # st.image(cap)
 
     # @st.cache(suppress_st_warning=True)
     # def cropImg():
@@ -95,51 +99,60 @@ def mainApp():
     #         st.write(rect) 
     #     return rect
 
+    if len(st.session_state.cap) > 0:
+        if 'crop_data_list' not in st.session_state:
+            st.session_state['crop_data_list'] = []
+            for i in range(len(st.session_state['cap'])):
+                st.session_state['crop_data_list'].append(CropData(st.session_state['cap'][i], i))
+        index = st.selectbox(
+            'Choose Image',
+            [str(i) for i in range(len(st.session_state['crop_data_list']))])
+        st.image(st.session_state['crop_data_list'][int(index)].frame)
+        crop_app_process(realtime_update, box_color, zoom, st.session_state['crop_data_list'][int(index)])
 
 
+def crop_app_process(realtime_update, box_color, zoom, cropData):
+    # if 'cap' not in st.session_state:
+    #     _, frame = vid.read()
+    #     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+    #     st.session_state['cap'] = crop
+    #     cap_true = True
+    #     # st.session_state['cap'] = ImageGrab.grab(bbox=(115, 143, 1069, 1083))
+    #     st.session_state['cap'] = Image.fromarray(crop)
+
+
+
+    run = st.checkbox('Run')
     if run:
-        # if 'cap' not in st.session_state:
-        #     _, frame = vid.read()
-        #     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            
-        #     st.session_state['cap'] = frame
-        #     cap_true = True
-        #     # st.session_state['cap'] = ImageGrab.grab(bbox=(115, 143, 1069, 1083))
-        #     st.session_state['cap'] = Image.fromarray(frame)
+    # if "potato" is "onion":
+        if not realtime_update:
+            st.write("Double click to save crop")
+        return_type = 'box'
+        pil_frame = Image.fromarray(cropData.frame)
+        if return_type == 'box':
+            rect = st_cropper(
+                pil_frame,
+                realtime_update=realtime_update,
+                box_color=box_color,
+                aspect_ratio=None,
+                return_type="box"
+            )
+            raw_image = np.asarray(cropData.frame).astype('uint8')
+            left, top, width, height = tuple(map(int, rect.values()))
+            # st.write(rect)
+            # masked_image = np.zeros(raw_image.shape, dtype='uint8')
+            cropped_img = raw_image[top:top + height, left:left + width]
+            cropped_img = Image.fromarray(cropped_img)
 
+            scale_percent = zoom  # percent of original size
+            rewidth = int(width * scale_percent / 100)
+            reheight = int(height * scale_percent / 100)
 
-        
-        if st.session_state.cap:
-            if not realtime_update:
-                st.write("Double click to save crop")
-            return_type = 'box'
-            if return_type == 'box': 
-                rect = st_cropper(
-                    st.session_state.cap,
-                    realtime_update=realtime_update,
-                    box_color=box_color,
-                    aspect_ratio=None,
-                    return_type="box"
-                )
+            newsize = (rewidth, reheight)
+            newimg = cropped_img.resize(newsize)
 
-            
-                raw_image = np.asarray(st.session_state.cap).astype('uint8')
-                left, top, width, height = tuple(map(int, rect.values()))
-                # st.write(rect)
-                # masked_image = np.zeros(raw_image.shape, dtype='uint8')
-                cropped_img = raw_image[top:top + height, left:left + width]
-                cropped_img = Image.fromarray(cropped_img)
-                
-                scale_percent = zoom # percent of original size
-                rewidth = int(width * scale_percent / 100)
-                reheight = int(height * scale_percent / 100)
-
-                newsize = (rewidth,reheight)
-                newimg=cropped_img.resize(newsize)
-                
-                st.image(newimg)
-                # st.image(Image.fromarray(masked_image), caption='masked image')
-
+            st.image(newimg)
 
 
     saveCrop = st.button("Save Crop")
@@ -147,59 +160,46 @@ def mainApp():
 
     crop = None
     counter = 0
-
-    if 'cropArr' not in st.session_state:
-        st.session_state['cropArr'] = []
-    counter = 0
-
+    print("end of function, for now")
     if saveCrop:
-        
-        st.session_state.cropArr.append(rect)
-        st.write(st.session_state.cropArr)
-        
+        print("in save crop")
+        st.session_state['crop_data_list'][cropData.num].crops.append(rect)
+        st.write(st.session_state['crop_data_list'][cropData.num].crops)
+
         placeholder.header("Saved")
         time.sleep(2)
         placeholder.empty()
-        
-        
 
-    if saveCrop | len(st.session_state.cropArr)>0:
-        while counter < len(st.session_state.cropArr):
-            
-            leftco = st.session_state.cropArr[counter]["left"]
-            widthco = st.session_state.cropArr[counter]["width"]
-            topco = st.session_state.cropArr[counter]["top"]
-            heightco = st.session_state.cropArr[counter]["height"]
+    if saveCrop | len(st.session_state['crop_data_list'][cropData.num].crops) > 0:
+        while counter < len(st.session_state['crop_data_list'][cropData.num].crops):
+            leftco = st.session_state['crop_data_list'][cropData.num].crops[counter]["left"]
+            widthco = st.session_state['crop_data_list'][cropData.num].crops[counter]["width"]
+            topco = st.session_state['crop_data_list'][cropData.num].crops[counter]["top"]
+            heightco = st.session_state['crop_data_list'][cropData.num].crops[counter]["height"]
+
 
             # st.write(leftco)
             # st.write(widthco)
             # st.write(topco)
             # st.write(heightco)
-            
-            cap_arr = np.array(st.session_state.cap) 
 
-            imgcrop = cap_arr[topco:topco+heightco, leftco:leftco+widthco]
+            cap_arr = np.array(cropData.frame)
+
+            imgcrop = cap_arr[topco:topco + heightco, leftco:leftco + widthco]
             cropped_img = Image.fromarray(imgcrop)
-                
-            scale_percent = zoom # percent of original size
+
+            scale_percent = zoom  # percent of original size
             rewidth = int(widthco * scale_percent / 100)
             reheight = int(heightco * scale_percent / 100)
 
-            newsize = (rewidth,reheight)
-            newcrop=cropped_img.resize(newsize)
 
-            
-            st.session_state.d["FRAME_WINDOW%s" % counter ] = st.image(newcrop)
-            
-            
-            counter+=1
+            newsize = (rewidth, reheight)
+            newcrop = cropped_img.resize(newsize)
+            print("crop app size")
+            print(newsize)
 
-        
+            st.session_state.d["FRAME_WINDOW%s" % counter] = st.image(newcrop)
 
-            #crop = ImageGrab.grab(bbox=(st.session_state.cropArr[counter].left, st.session_state.cropArr[counter].top, st.session_state.cropArr[counter].width, st.session_state.cropArr[counter].height))
-            
+            counter += 1
 
-
-
-            
-            
+            # crop = ImageGrab.grab(bbox=(st.session_state.cropArr[counter].left, st.session_state.cropArr[counter].top, st.session_state.cropArr[counter].width, st.session_state.cropArr[counter].height))
