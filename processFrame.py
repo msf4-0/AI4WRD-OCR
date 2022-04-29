@@ -1,15 +1,27 @@
-import cv2 as cv
+import cv2
 
+
+# todo add a way to call the algorithms depending on the algorithm in crop data
 
 class CropData:
     """ class encapsulating the crops and corresponding data
     Attributes:
     """
 
-    def __init__(self, crops):
+    def __init__(self, frame, num, crops=None):
         self.algorithms = []
-        self.crops = crops
+        self.frame = frame
+        self.num = num
+        if crops is None:
+            self.crops = []
+        else: 
+            self.crops = crops
 
+
+    def __str__(self):
+        return f'Crop {self.num}'
+
+    # depreciated
     def add_algorithm(self, algo, frame):
         """
         Algorithms are ordered based on the order that they are inserted, thus they should be
@@ -27,37 +39,47 @@ class CropData:
         assert self.algorithms[-1][0] == str(algo)
 
 
+# todo can separate features and algo if needed later
+
 class SiftFlannAlgo:
     """
-    match using
+    match using sift features and the flann algorithm
     Attributes:
         num (int):
-        framelist (CropData):list of saved crops and corresponding data
+        frame_list (CropData):list of saved crops and corresponding data
         algorithm_data_list :list of data corresponding to algorithms
 
     """
 
-    def __init__(self, framelist: [CropData], index: int):
-        """
-        :param framelist:
-        """
-        self.num: int = 0
-        self.framelist = framelist
-        self.algorithmdatalist = [] * len(self.framelist)
-        for aframe in framelist:
-            self.algorithm_data_list = aframe.algorithms[index][1]
+    def __init__(self, frame_list: [CropData], num: int):
+        """ 
+        :param frame_list: list of cropdata 
+        :param id: id of current algorithm
 
-        self.sift_detector = cv.SIFT_create()
-        self.flann_matcher = cv.DescriptorMatcher_create(cv.DescriptorMatcher_FLANNBASED)
+        """
+        self.frame_list = frame_list
+        self.num: int = num
+
+        # Initializing detectors and flann
+        self.sift_detector = cv2.SIFT_create()
+        self.flann_matcher = cv2.DescriptorMatcher_create(cv2.DescriptorMatcher_FLANNBASED)
+
 
     def __str__(self):
         return "SiftFlannAlgo"
+
+
+    def initialize_algorithm_data(self):
+        self.algorithm_data_list = [self.precompute(aframe.frame) for aframe in self.frame_list]
+
 
     def precompute(self, frame):
         """
         return sift descriptors for each frame
         :return:
         """
+        print(type(frame))
+        frame = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
         _, descriptors = self.sift_detector.detectAndCompute(frame, None)
         return descriptors
 
@@ -65,49 +87,68 @@ class SiftFlannAlgo:
         """
 
         :param video_frame:
-        :return: the view corresponding to said algorithm
+        :return: the crops which data best matches the data of the current video stream
         :rtype:
         """
 
-        _, framedescriptors = self.sift_detector.detectAndCompute(video_frame, None)
+        video_frame = cv2.cvtColor(video_frame, cv2.COLOR_BGR2GRAY)
+        _, frame_descriptors = self.sift_detector.detectAndCompute(video_frame, None)
 
-        maxmatchratio = 0
-        maxmatchindex = 0
+        max_match_ratio = 0
+        max_match_index = 0
         for i in range(len(self.algorithm_data_list)):
-            matches = self.flann_matcher(framedescriptors, self.algorithmdatalist[i], 2)
+            if (frame_descriptors is None) or (self.algorithm_data_list[i] is None):
+                break
+            if(len(frame_descriptors) != 0 and len(self.algorithm_data_list[i]) != 0):
+                matches = self.flann_matcher.knnMatch(frame_descriptors, self.algorithm_data_list[i], 2)
 
-            threshold = 0.7
-            goodmatches = []
-            for m, n in matches:
-                if m.distance < threshold * n.distance:
-                    goodmatches.append(m)
-            currentmatchratio = len(goodmatches) / (len(matches))
+                threshold = 0.7
+                good_matches = []
+                for m, n in matches:
+                    if m.distance < threshold * n.distance:
+                        good_matches.append(m)
+                current_match_ratio = len(good_matches) / (len(matches))
 
-            # code to update the maxmatchratio with the largest match
-            if maxmatchratio < currentmatchratio:
-                maxmatchindex = i
+                # code to update the max_match_ratio with the largest match
+                if max_match_ratio < current_match_ratio:
+                    max_match_index = i
+                    max_match_ratio = current_match_ratio
+                print(max_match_ratio)
+                print(current_match_ratio)
+            else:
+                pass
 
-        return self.framelist[maxmatchindex].crops
+        print(max_match_index)
+        print(self.frame_list[max_match_index].crops)
+        return self.frame_list[max_match_index].crops
+#
+#
+# def get_crop_views(crops, frame):
+#     """
+#     leftco = st.session_state.cropArr[counter]["left"]
+#     widthco = st.session_state.cropArr[counter]["width"]
+#     topco = st.session_state.cropArr[counter]["top"]
+#     heightco = st.session_state.cropArr[counter]["height"]
+#
+#     # st.write(leftco)
+#     # st.write(widthco)
+#     # st.wprorite(topco)
+#     # st.write(heightco)
+#
+#     cap_arr = np.array(st.session_state.cap)
+#
+#     imgcrop = cap_arr[topco:topco + heightco, leftco:leftco + widthco]
+#     cropped_img = Image.fromarray(imgcrop)
+#     """
+#
+#     for crop in crops:
+#         pass
 
 
-def GetCropViews():
-    """
-    leftco = st.session_state.cropArr[counter]["left"]
-    widthco = st.session_state.cropArr[counter]["width"]
-    topco = st.session_state.cropArr[counter]["top"]
-    heightco = st.session_state.cropArr[counter]["height"]
 
-    # st.write(leftco)
-    # st.write(widthco)
-    # st.wprorite(topco)
-    # st.write(heightco)
 
-    cap_arr = np.array(st.session_state.cap)
 
-    imgcrop = cap_arr[topco:topco + heightco, leftco:leftco + widthco]
-    cropped_img = Image.fromarray(imgcrop)
-    """
-    pass
+
 
 
 '''

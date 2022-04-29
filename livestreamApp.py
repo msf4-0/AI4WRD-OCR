@@ -1,4 +1,7 @@
 import random
+
+import PIL
+import numpy
 import streamlit as st
 import cv2
 import json
@@ -17,6 +20,8 @@ from datetime import datetime
 from paho.mqtt import client as mqtt_client
 import pandas as pd
 
+from processFrame import SiftFlannAlgo
+
 
 
 def on_connect(client, userdata, flags, rc):
@@ -33,7 +38,22 @@ def connect_mqtt(client_id, broker, port):
     client.connect(broker, port)
     return client
 
+@st.cache
+def preprocess_images():
+    # change to use the right algorithm depending on the algorithm list
+
+    # # converting from pil to opencv
+    # open_cv_images = []
+    # for i in range(len(st.session_state['crop_data_list'])):
+    #     open_cv_images.append(cv2.cvtColor(numpy.array(pil_image), cv2.COLOR_RGB2BGR))
+
+    st.session_state['siftFlannAlgo'] = SiftFlannAlgo(st.session_state['crop_data_list'], 0)
+    st.session_state['siftFlannAlgo'].initialize_algorithm_data()
+
 def mainApp():
+    # preprocessing images for algorithms
+    preprocess_images()
+    # removing checks on whether global variables exist
     if 'cropArr' not in st.session_state:
             st.session_state['cropArr'] = []
 
@@ -108,132 +128,159 @@ def mainApp():
         """
 
 
+
         file_saving_status = st.empty()
 
 
-        while counter < len(st.session_state.cropArr):
-            st.session_state.d1["FRAME_WINDOW{0}".format(counter)] = st.image([])
-            st.session_state.d1["placeholderOCR{0}".format(counter)] = st.empty()
-            counter+=1
+
 
         continuousSave = 0
+        someVideo = cv2.VideoCapture(1, cv2.CAP_DSHOW)
+        someVideo.set(3, 1280)
+        someVideo.set(4, 720)
+
         while True:
             a = time.time()
-            _, frame = st.session_state.vid.read()
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            FRAME_WINDOW.image(frame)
 
-            livecounter = 0
-            if len(st.session_state.cropArr) == 0:
-                status.subheader("No crops made.")
-            else:
-                while livecounter < len(st.session_state.cropArr):
+            # code to get frames
+            # _, frame = st.session_state.vid.read()
 
-                    leftco = st.session_state.cropArr[livecounter]["left"]
-                    widthco = st.session_state.cropArr[livecounter]["width"]
-                    topco = st.session_state.cropArr[livecounter]["top"]
-                    heightco = st.session_state.cropArr[livecounter]["height"]
-
-                    imgcrop = frame[topco:topco+heightco, leftco:leftco+widthco]
-                    cropped_img = Image.fromarray(imgcrop)
-                    
-                    scale_percent = zoom # percent of original size
-                    rewidth = int(widthco * scale_percent / 100)
-                    reheight = int(heightco * scale_percent / 100)
-
-                    newsize = (rewidth,reheight)
-                    newcrop=cropped_img.resize(newsize)
-                    imgcrop = np.array(newcrop)
-
-                    st.session_state.d1["FRAME_WINDOW%s" % livecounter].image(imgcrop)
-
-                    result = reader.readtext(imgcrop)
-                    
-                    oldtext = st.session_state.text
-
-                    st.session_state.text = ""
-                    for res in result:
-                        st.session_state.text += res[1] + " "
-
-                    
-                    #print(text)
-
-                    b = time.time()
-                    fps = 1/(b-a)    
-                    print(fps)
-
-                    strIDprint = "Crop " + str(livecounter+1) + ":      " + st.session_state.text
-
-                    st.session_state.d1["placeholderOCR%s" % livecounter].write(strIDprint)
-                    csvData = [datetime.now(), " Crop ID: %s" %(livecounter+1), st.session_state.text]
-
-                    st.session_state.data.append(csvData)
-                    if continuousSave == 1:
-                        savecontCSV = 1
-
-                    if saveallCSV:
-                        if path_to_save != '':
-                            try:
-                                with open(path_to_save + ".csv", 'w', encoding='UTF8', newline='') as f:
-                                    writer = csv.writer(f)
-
-                                    # write the header
-                                    writer.writerow(header)
-
-                                    # write multiple rows
-                                    writer.writerows(st.session_state.data)
-                                    saveallCSV = False
-                                file_saving_status.success("File Saved!")
-
-                            except Exception as e:
-                                print(e)
-                                file_saving_status.error("Error saving file")
-                        else:
-                            file_saving_status.error("Path not specified")
+            _, frame = someVideo.read()
 
 
+            # preprocess frame and get crops
+            # todo: run the right algo depending on data in cropData
+            if frame is not None:
+                current_crops = st.session_state['siftFlannAlgo'].process_video_frame(frame)
+                print("streaming")
+                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                FRAME_WINDOW.image(frame)
+
+                livecounter = 0
+                if len(current_crops) == 0:
+                    status.subheader("No crops made.")
+                else:
+                    while counter < len(current_crops):
+                        st.session_state.d1["FRAME_WINDOW{0}".format(counter)] = st.image([])
+                        st.session_state.d1["placeholderOCR{0}".format(counter)] = st.empty()
+                        counter += 1
+                    while livecounter < len(current_crops):
+
+                        leftco = current_crops[livecounter]["left"]
+                        widthco = current_crops[livecounter]["width"]
+                        topco = current_crops[livecounter]["top"]
+                        heightco = current_crops[livecounter]["height"]
+
+                        # raw_image = np.asarray(frame).astype('uint8')
+                        imgcrop = frame[topco:topco+heightco, leftco:leftco+widthco]
+                        cropped_img = Image.fromarray(imgcrop)
+
+                        scale_percent = zoom # percent of original size
+                        rewidth = int(widthco * scale_percent / 100)
+                        reheight = int(heightco * scale_percent / 100)
+
+                        newsize = (rewidth,reheight)
+                        newcrop=cropped_img.resize(newsize)
+                        imgcrop = np.array(newcrop)
+
+                        print("livestream app size")
+                        print(newsize)
+
+                        st.session_state.d1["FRAME_WINDOW%s" % livecounter].image(imgcrop)
+
+                        result = reader.readtext(imgcrop)
+
+                        print(result)
+
+                        oldtext = st.session_state.text
+
+                        st.session_state.text = ""
+                        for res in result:
+                            st.session_state.text += res[1] + " "
 
 
+                        #print(text)
 
-                    elif savecontCSV:
-                        if path_to_save != '':
-                            try:
-                                with open('path_to_save', 'w', encoding='UTF8', newline='') as f:
-                                    writer = csv.writer(f)
+                        b = time.time()
+                        fps = 1/(b-a)
+                        print(fps)
 
-                                    if continuousSave == 0:
+                        strIDprint = "Crop " + str(livecounter+1) + ":      " + st.session_state.text
+
+
+                        """
+                        csv stuff
+                        """
+                        st.session_state.d1["placeholderOCR%s" % livecounter].write(strIDprint)
+                        csvData = [datetime.now(), " Crop ID: %s" %(livecounter+1), st.session_state.text]
+
+                        st.session_state.data.append(csvData)
+                        if continuousSave == 1:
+                            savecontCSV = 1
+
+                        if saveallCSV:
+                            if path_to_save != '':
+                                try:
+                                    with open(path_to_save + ".csv", 'w', encoding='UTF8', newline='') as f:
+                                        writer = csv.writer(f)
+
                                         # write the header
                                         writer.writerow(header)
 
-                                    # write multiple rows
-                                    writer.writerows(st.session_state.data)
+                                        # write multiple rows
+                                        writer.writerows(st.session_state.data)
+                                        saveallCSV = False
+                                    file_saving_status.success("File Saved!")
 
-                                continuousSave = 1
-                                file_saving_status.info("Data stream is being appended to csv file")
+                                except Exception as e:
+                                    print(e)
+                                    file_saving_status.error("Error saving file")
+                            else:
+                                file_saving_status.error("Path not specified")
 
-                            except Exception as e:
-                                print(e)
-                                file_saving_status.error("Error saving file")
-                        else:
-                            file_saving_status.error("Path not specified")
 
-                    elif publish_mqtt:
-                        msg_count = 0
 
-                        time.sleep(1)
-                        msg = f"messages: {msg_count}"
 
-                        df = pd.DataFrame(csvData)
 
-                        result = client.publish(topic, df.to_csv(index=False))
+                        elif savecontCSV:
+                            if path_to_save != '':
+                                try:
+                                    with open('path_to_save', 'w', encoding='UTF8', newline='') as f:
+                                        writer = csv.writer(f)
 
-                        # result: [0, 1]
-                        status = result[0]
-                        if status == 0:
-                            print(f"Send `{msg}` to topic `{topic}`")
-                        else:
-                            print(f"Failed to send message to topic {topic}")
-                        msg_count += 1
+                                        if continuousSave == 0:
+                                            # write the header
+                                            writer.writerow(header)
 
-                    cv2.waitKey(0)
-                    livecounter+=1
+                                        # write multiple rows
+                                        writer.writerows(st.session_state.data)
+
+                                    continuousSave = 1
+                                    file_saving_status.info("Data stream is being appended to csv file")
+
+                                except Exception as e:
+                                    print(e)
+                                    file_saving_status.error("Error saving file")
+                            else:
+                                file_saving_status.error("Path not specified")
+
+                        elif publish_mqtt:
+                            msg_count = 0
+
+                            time.sleep(1)
+                            msg = f"messages: {msg_count}"
+
+                            df = pd.DataFrame(csvData)
+
+                            result = client.publish(topic, df.to_csv(index=False))
+
+                            # result: [0, 1]
+                            status = result[0]
+                            if status == 0:
+                                print(f"Send `{msg}` to topic `{topic}`")
+                            else:
+                                print(f"Failed to send message to topic {topic}")
+                            msg_count += 1
+
+                        cv2.waitKey(0)
+                        livecounter+=1
