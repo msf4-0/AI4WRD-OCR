@@ -143,9 +143,9 @@ def mainApp():
             a = time.time()
 
             # code to get frames
-            # _, frame = st.session_state.vid.read()
+            _, frame = st.session_state.vid.read()
 
-            _, frame = someVideo.read()
+            # _, frame = someVideo.read()
 
 
             # preprocess frame and get crops
