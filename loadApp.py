@@ -11,11 +11,11 @@ from PIL import Image
 #
 # FRAME_WINDOW = st.image([])
 
-
+# @st.cache
 def clearsessState():
     # # Delete all the items in Session state
-    # for key in st.session_state.keys():
-    #     del st.session_state[key]
+    for key in st.session_state.keys():
+        del st.session_state[key]
     mainApp()
 
 
@@ -58,6 +58,7 @@ def get_frame(camera_choice):
 
 
 def mainApp():
+    # clearsessState()
     st.header("HDMI Capture")
 
     options = st.multiselect(
@@ -99,6 +100,7 @@ def mainApp():
         frame_window2 = st.image([])
 
         if run:
+            st.session_state['camera_choice'] = camera_choice
             st.session_state.vid = cv2.VideoCapture(camera_choice, cv2.CAP_DSHOW)
             st.session_state.vid.set(3, 1280)
             st.session_state.vid.set(4, 720)

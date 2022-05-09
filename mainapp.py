@@ -41,7 +41,7 @@ st.title("""
 """)
 
 
-mainApp.add_app("Load frame", loadApp.clearsessState)
+mainApp.add_app("Load frame", loadApp.mainApp)
 mainApp.add_app("Crop", cropApp.mainApp)
 mainApp.add_app("OCR Livestream", livestreamApp.mainApp)
 

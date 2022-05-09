@@ -1,5 +1,6 @@
 import random
 
+import pytesseract
 import PIL
 import numpy
 import streamlit as st
@@ -21,6 +22,25 @@ from paho.mqtt import client as mqtt_client
 import pandas as pd
 
 from processFrame import SiftFlannAlgo
+
+from pytesseract import Output
+
+
+def ocr_tesseract(crop):
+    '''
+    :param crop:
+    :return: a string containing the read text
+    '''
+    custom_config = r'--oem 3 --psm 6'
+    return pytesseract.image_to_data(crop, config=custom_config, output_type=Output.DICT)
+
+def ocr_easyOcr(crop, reader):
+    '''
+    :param crop:
+    :param reader: a preinitialized easy_ocr reader instance
+    :return: a string containing the read text
+    '''
+    return reader.readtext(crop)
 
 
 
@@ -61,7 +81,7 @@ def mainApp():
         st.session_state['lang'] = ""
 
 
-
+    # Initialize the models
     if st.session_state.lang == "Chn":
         reader = easyocr.Reader(['ch_sim','en'], gpu=True)
         #st.write("Reading Chinese")
@@ -82,11 +102,20 @@ def mainApp():
 
     if 'text' not in st.session_state:
             st.session_state['text']= []
-    
+
     doneCrop = st.checkbox('Done Crop')
 
 
+
+
     if doneCrop:
+
+        ocr_model = st.selectbox(
+            'Choose Model',
+            ["tesseract", "easy_ocr"])
+
+        confidence_level = st.number_input(min_value=0.0, max_value=1.0, value=0.7, step=0.05, label="OCR Confidence Cut-Off")
+
         continuousSave = 0
         counter = 0
         FRAME_WINDOW = st.image([])
@@ -135,18 +164,25 @@ def mainApp():
 
 
         continuousSave = 0
-        someVideo = cv2.VideoCapture(1, cv2.CAP_DSHOW)
-        someVideo.set(3, 1280)
-        someVideo.set(4, 720)
+        # someVideo = cv2.VideoCapture(1, cv2.CAP_DSHOW)
+        # someVideo.set(3, 1280)
+        # someVideo.set(4, 720)
 
         while True:
             a = time.time()
 
             # code to get frames
             _, frame = st.session_state.vid.read()
+            if frame is None:
+                st.session_state.vid = cv2.VideoCapture(st.session_state.camera_choice, cv2.CAP_DSHOW)
+                st.session_state.vid.set(3, 1280)
+                st.session_state.vid.set(4, 720)
 
             # _, frame = someVideo.read()
 
+            for key in st.session_state.keys():
+                print(key)
+                print(type(st.session_state[key]))
 
             # preprocess frame and get crops
             # todo: run the right algo depending on data in cropData
@@ -188,18 +224,24 @@ def mainApp():
 
                         st.session_state.d1["FRAME_WINDOW%s" % livecounter].image(imgcrop)
 
-                        result = reader.readtext(imgcrop)
-
-                        print(result)
-
+                        # # result = reader.readtext(imgcrop)
+                        # custom_config = r'--oem 3 --psm 6'
                         oldtext = st.session_state.text
 
                         st.session_state.text = ""
-                        for res in result:
-                            st.session_state.text += res[1] + " "
 
+                        if ocr_model == "tesseract":
+                            result = ocr_tesseract(imgcrop)
+                            for index in range(len(result['text'])):
+                                if result['conf'][index] >= confidence_level:
+                                    st.session_state.text += result['text'][index] + " "
 
-                        #print(text)
+                        elif ocr_model == "easy_ocr":
+                            result = ocr_easyOcr(imgcrop, reader)
+                            for res in result:
+                                if res[2] >= confidence_level:
+                                    st.session_state.text += res[1] + " "
+
 
                         b = time.time()
                         fps = 1/(b-a)

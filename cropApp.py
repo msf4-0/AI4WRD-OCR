@@ -27,10 +27,10 @@ done2 = 0
 
 def clearsessState():
     # Delete all the items in Session state
-    del st.session_state['vid']
-    del st.session_state['data']
-    del st.session_state['text']
-    del st.session_state['d1']
+    # del st.session_state['vid']
+    # del st.session_state['data']
+    # del st.session_state['text']
+    # del st.session_state['d1']
 
     mainApp()
 
@@ -40,6 +40,8 @@ def mainApp():
     #     preProcessFrames()
 
     st.header("Cropping Tool")
+    for key in st.session_state.keys():
+        print(key)
     realtime_update = st.sidebar.checkbox(label="Update in Real Time", value=True)
     box_color = st.sidebar.color_picker(label="Box Color", value='#0000FF')
 
@@ -121,7 +123,7 @@ def crop_app_process(realtime_update, box_color, zoom, cropData):
     #     # st.session_state['cap'] = ImageGrab.grab(bbox=(115, 143, 1069, 1083))
     #     st.session_state['cap'] = Image.fromarray(crop)
 
-
+    # _, frame = st.session_state.vid.read()
 
     run = st.checkbox('Run')
     if run:
