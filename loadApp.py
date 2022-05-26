@@ -61,21 +61,20 @@ def mainApp():
     # clearsessState()
     st.header("HDMI Capture")
 
-    options = st.multiselect(
-        'Select languages to read',
-        ['English', 'Chinese'])
+    st.session_state.lang = st.selectbox(
+        'Option to try to detect another language',
+        ['', 'Traditional Chinese', 'Simplified Chinese'])
 
     if 'lang' not in st.session_state:
         st.session_state['lang'] = ""
-
-    if len(options) == 1:
-        if options[0] == "Chinese":
-            st.session_state.lang = "Chn"
-            # st.write("Chinese selected")
-    elif len(options) == 2:
-        if options[1] == "Chinese":
-            st.session_state.lang = "Chn"
-            # st.write("Chinese selected")
+    #
+    # if len(options) > 0:
+    #     if "Chinese Simplified" in options:
+    #         st.session_state.lang = "Chi_sim"
+    #         # st.write("Chinese selected")
+    #     elif "Chinese Traditional" in options:
+    #         st.session_state.lang = "Chi_tra"
+    #             # st.write("Chinese selected")
 
     # st.write('You selected:', options)
 

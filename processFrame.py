@@ -87,7 +87,7 @@ class SiftFlannAlgo:
         """
 
         :param video_frame:
-        :return: the crops which data best matches the data of the current video stream
+        :return: the crops which data best matches the data of the current video stream, index of the crop
         :rtype:
         """
 
@@ -113,14 +113,14 @@ class SiftFlannAlgo:
                 if max_match_ratio < current_match_ratio:
                     max_match_index = i
                     max_match_ratio = current_match_ratio
-                print(max_match_ratio)
-                print(current_match_ratio)
+                # print(max_match_ratio)
+                # print(current_match_ratio)
             else:
                 pass
 
-        print(max_match_index)
-        print(self.frame_list[max_match_index].crops)
-        return self.frame_list[max_match_index].crops
+        # print(max_match_index)
+        # print(self.frame_list[max_match_index].crops)
+        return self.frame_list[max_match_index].crops, max_match_index
 #
 #
 # def get_crop_views(crops, frame):

@@ -26,12 +26,20 @@ from processFrame import SiftFlannAlgo
 from pytesseract import Output
 
 
-def ocr_tesseract(crop):
+def ocr_tesseract(crop, ):
     '''
     :param crop:
     :return: a string containing the read text
     '''
-    custom_config = r'--oem 3 --psm 6'
+
+    if st.session_state.lang == "Traditional Chinese":
+        custom_config = r'--oem 3 -l eng+chi_tra --psm 6'
+    elif st.session_state.lang == "Simplified Chinese":
+        print("orwel123")
+        print("Simplified Chinese")
+        custom_config = r'--oem 3 -l eng+chi_sim --psm 6'
+    elif st.session_state.lang == "":
+        custom_config = r'--oem 3 --psm 6'
     return pytesseract.image_to_data(crop, config=custom_config, output_type=Output.DICT)
 
 def ocr_easyOcr(crop, reader):
@@ -51,7 +59,6 @@ def on_connect(client, userdata, flags, rc):
         print("Failed to connect, return code %d\n", rc)
 
 
-@st.cache
 def connect_mqtt(client_id, broker, port):
     client = mqtt_client.Client(client_id)
     client.on_connect = on_connect
@@ -71,6 +78,8 @@ def preprocess_images():
     st.session_state['siftFlannAlgo'].initialize_algorithm_data()
 
 def mainApp():
+
+
     # preprocessing images for algorithms
     preprocess_images()
     # removing checks on whether global variables exist
@@ -82,8 +91,10 @@ def mainApp():
 
 
     # Initialize the models
-    if st.session_state.lang == "Chn":
+    if st.session_state.lang == "Simplified Chinese":
         reader = easyocr.Reader(['ch_sim','en'], gpu=True)
+    elif st.session_state.lang == "Traditional Chinese":
+        reader = easyocr.Reader(['ch_tra', 'en'], gpu=True)
         #st.write("Reading Chinese")
     elif st.session_state.lang == "":
         reader = easyocr.Reader(['en'], gpu=True)
@@ -136,20 +147,24 @@ def mainApp():
         Mqtt test 
         """
         status_mqtt = st.empty()
-        mqtt_address = st.text_input('Mqtt Broker Address', '')
-        mqtt_topic = st.text_input('Mqtt topic to publish to', '')
+        mqtt_address = st.text_input('Mqtt Broker Address', 'broker.emqx.io')
+        mqtt_topic = st.text_input('Mqtt topic to publish to', 'ai4wrd_output')
         publish_mqtt = st.button("Publish to Mqtt server")
 
         # mqtt test
-        broker = 'broker.emqx.io'
+        # broker = 'broker.emqx.io'
         port = 1883
-        topic = "test123456"
+        # topic = "ai4wrd_output"
         client_id = f'python-mqtt-{random.randint(0, 1000)}'
         # username = 'emqx'
         # password = 'public
         #
+
+
+
         if publish_mqtt:
-            client = connect_mqtt(client_id, broker, port)
+            if mqtt_address != "":
+                client = connect_mqtt(client_id, mqtt_address, port)
 
 
         """
@@ -178,16 +193,17 @@ def mainApp():
                 st.session_state.vid.set(3, 1280)
                 st.session_state.vid.set(4, 720)
 
-            # _, frame = someVideo.read()
-
-            for key in st.session_state.keys():
-                print(key)
-                print(type(st.session_state[key]))
-
             # preprocess frame and get crops
             # todo: run the right algo depending on data in cropData
+            if "previous_crops_length" not in st.session_state:
+                st.session_state.previous_crops_length = None
             if frame is not None:
-                current_crops = st.session_state['siftFlannAlgo'].process_video_frame(frame)
+                time_pre_screen_detection = time.time()
+                current_crops, crop_index = st.session_state['siftFlannAlgo'].process_video_frame(frame)
+                time_after_screen_detection = time.time()
+                time_for_screen_detection = time_after_screen_detection - time_pre_screen_detection
+                print(f"its taken {time_for_screen_detection} seconds to process the screens")
+
                 print("streaming")
                 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 FRAME_WINDOW.image(frame)
@@ -195,13 +211,32 @@ def mainApp():
                 livecounter = 0
                 if len(current_crops) == 0:
                     status.subheader("No crops made.")
+                    if st.session_state.previous_crops_length is not None:
+                        if st.session_state.previous_crops_length > len(current_crops):
+                            for i in range(st.session_state.previous_crops_length):
+                                st.session_state.d1[f"FRAME_WINDOW{i}"].empty()
+                                st.session_state.d1[f"placeholderOCR{i}"].empty()
                 else:
+                    status.subheader("")
+                    # clearing old crops
+                    if st.session_state.previous_crops_length is not None:
+                        if st.session_state.previous_crops_length > len(current_crops):
+                            print("removing previous data")
+                            for i in range(len(current_crops), st.session_state.previous_crops_length):
+                                st.session_state.d1[f"FRAME_WINDOW{i}"].empty()
+                                st.session_state.d1[f"placeholderOCR{i}"].empty()
+                    st.session_state.previous_crops_length = len(current_crops)
+                    # Adding more st images as needed
                     while counter < len(current_crops):
-                        st.session_state.d1["FRAME_WINDOW{0}".format(counter)] = st.image([])
-                        st.session_state.d1["placeholderOCR{0}".format(counter)] = st.empty()
+                        st.session_state.d1[f"FRAME_WINDOW{counter}"] = st.image([])
+                        st.session_state.d1[f"placeholderOCR{counter}"] = st.empty()
                         counter += 1
-                    while livecounter < len(current_crops):
 
+                    ocr_time = 0.0
+                    timeTakenImageRender = 0.0
+                    timeTakenRenderText = 0.0
+
+                    while livecounter < len(current_crops):
                         leftco = current_crops[livecounter]["left"]
                         widthco = current_crops[livecounter]["width"]
                         topco = current_crops[livecounter]["top"]
@@ -219,17 +254,18 @@ def mainApp():
                         newcrop=cropped_img.resize(newsize)
                         imgcrop = np.array(newcrop)
 
-                        print("livestream app size")
-                        print(newsize)
-
+                        preImageTime = time.time()
                         st.session_state.d1["FRAME_WINDOW%s" % livecounter].image(imgcrop)
+                        postImageTime = time.time()
+                        timeTakenImageRender += (postImageTime - preImageTime)
 
-                        # # result = reader.readtext(imgcrop)
+                        # result = reader.readtext(imgcrop)
                         # custom_config = r'--oem 3 --psm 6'
                         oldtext = st.session_state.text
 
                         st.session_state.text = ""
 
+                        time_pre_ocr = time.time()
                         if ocr_model == "tesseract":
                             result = ocr_tesseract(imgcrop)
                             for index in range(len(result['text'])):
@@ -242,18 +278,24 @@ def mainApp():
                                 if res[2] >= confidence_level:
                                     st.session_state.text += res[1] + " "
 
+                        time_post_ocr = time.time()
+                        ocr_time += (time_post_ocr - time_pre_ocr)
 
-                        b = time.time()
-                        fps = 1/(b-a)
-                        print(fps)
+
+
 
                         strIDprint = "Crop " + str(livecounter+1) + ":      " + st.session_state.text
 
 
                         """
-                        csv stuff
+                        formatting output
                         """
+                        pre_render_text = time.time()
                         st.session_state.d1["placeholderOCR%s" % livecounter].write(strIDprint)
+                        post_render_text = time.time()
+                        timeTakenRenderText += (post_render_text - pre_render_text)
+
+
                         csvData = [datetime.now(), " Crop ID: %s" %(livecounter+1), st.session_state.text]
 
                         st.session_state.data.append(csvData)
@@ -306,23 +348,35 @@ def mainApp():
                             else:
                                 file_saving_status.error("Path not specified")
 
+                        # Mqtt stuff
                         elif publish_mqtt:
-                            msg_count = 0
+                            # msg_count = 0
 
                             time.sleep(1)
-                            msg = f"messages: {msg_count}"
+                            # msg = f"messages: {msg_count}"
 
                             df = pd.DataFrame(csvData)
 
-                            result = client.publish(topic, df.to_csv(index=False))
+                            result = client.publish(mqtt_topic + str(crop_index), df.to_csv(index=False))
 
                             # result: [0, 1]
-                            status = result[0]
-                            if status == 0:
-                                print(f"Send `{msg}` to topic `{topic}`")
+                            status_mqtt = result[0]
+                            if status_mqtt == 0:
+                                print(f"Send `{df.to_csv(index=False)}` to topic `{mqtt_topic + str(crop_index)}`")
                             else:
-                                print(f"Failed to send message to topic {topic}")
-                            msg_count += 1
+                                print(f"Failed to send message to topic {mqtt_topic}")
+                            # msg_count += 1
 
                         cv2.waitKey(0)
                         livecounter+=1
+
+                        print(f"its taken {timeTakenImageRender} time to render the IMAGE")
+                        print(f"its taken {timeTakenRenderText} time to render the TEXT")
+                        print(f"its taken {ocr_time} time to perform ocr]")
+
+
+                        b = time.time()
+                        fps = 1 / (b - a)
+                        print(f"the fps is: {fps}")
+
+

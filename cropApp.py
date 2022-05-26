@@ -40,8 +40,6 @@ def mainApp():
     #     preProcessFrames()
 
     st.header("Cropping Tool")
-    for key in st.session_state.keys():
-        print(key)
     realtime_update = st.sidebar.checkbox(label="Update in Real Time", value=True)
     box_color = st.sidebar.color_picker(label="Box Color", value='#0000FF')
 
@@ -157,6 +155,8 @@ def crop_app_process(realtime_update, box_color, zoom, cropData):
             st.image(newimg)
 
 
+
+
     saveCrop = st.button("Save Crop")
     placeholder = st.empty()
 
@@ -197,8 +197,6 @@ def crop_app_process(realtime_update, box_color, zoom, cropData):
 
             newsize = (rewidth, reheight)
             newcrop = cropped_img.resize(newsize)
-            print("crop app size")
-            print(newsize)
 
             st.session_state.d["FRAME_WINDOW%s" % counter] = st.image(newcrop)
 
