@@ -60,6 +60,9 @@ def get_frame(camera_choice):
 def mainApp():
     # clearsessState()
     st.header("HDMI Capture")
+    st.sidebar.image("resources/MSF-logo.gif")
+    st.sidebar.header("AI4WRD OCR Tool")
+    st.sidebar.write("Developed by MSF-4.0 at Selangor Human Resource Development Center")
 
     st.session_state.lang = st.selectbox(
         'Option to try to detect another language',
