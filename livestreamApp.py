@@ -134,13 +134,14 @@ def mainApp():
         continuousSave = 0
         counter = 0
         FRAME_WINDOW = st.image([])
-        header = ['Timestamp','Crop ID', 'OCR Data']
+        header = ['Timestamp', 'Screen No', 'Crop ID', 'OCR Data']
 
         status = st.empty()
 
         # todo dont use st.write
         path_to_save = st.text_input('Path to save', '')
-        st.write('The current file is saved to: ', path_to_save + ".csv")
+        if path_to_save != '':
+            st.write('The current file is saved to: ', path_to_save + ".csv")
 
 
         saveallCSV = st.button("Save Previous to csv")
@@ -332,17 +333,20 @@ def mainApp():
                         elif savecontCSV:
                             if path_to_save != '':
                                 try:
-                                    with open(path_to_save + ".csv", 'w', encoding='UTF8', newline='') as f:
-                                        writer = csv.writer(f)
-
-                                        if continuousSave == 0:
+                                    if continuousSave == 0:
+                                        with open(path_to_save + ".csv", 'w', encoding='UTF8', newline='') as f:
+                                            writer = csv.writer(f)
                                             # write the header
                                             writer.writerow(header)
-
+                                            continuousSave = 1
+                                        with open(path_to_save + ".csv", 'a', encoding='UTF8', newline='') as f:
+                                            csv.writer(f).writerows(st.session_state.data)
+                                    else:
+                                        with open(path_to_save + ".csv", 'a', encoding='UTF8', newline='') as f:
+                                            csv.writer(f).writerow(csvData)
                                         # write multiple rows
-                                        writer.writerows(st.session_state.data)
 
-                                    continuousSave = 1
+
                                     file_saving_status.info("Data stream is being appended to csv file")
 
                                 except Exception as e:
