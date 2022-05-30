@@ -140,7 +140,7 @@ def mainApp():
 
         # todo dont use st.write
         path_to_save = st.text_input('Path to save', '')
-        st.write('The current path is', path_to_save)
+        st.write('The current file is saved to: ', path_to_save + ".csv")
 
 
         saveallCSV = st.button("Save Previous to csv")
@@ -332,7 +332,7 @@ def mainApp():
                         elif savecontCSV:
                             if path_to_save != '':
                                 try:
-                                    with open('path_to_save', 'w', encoding='UTF8', newline='') as f:
+                                    with open(path_to_save + ".csv", 'w', encoding='UTF8', newline='') as f:
                                         writer = csv.writer(f)
 
                                         if continuousSave == 0:
