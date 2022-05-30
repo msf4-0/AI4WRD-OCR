@@ -1,0 +1,44 @@
+# using ubuntu as base image
+FROM ubuntu:20.04
+
+# to avoid errors relating to the front end
+ARG DEBIAN_FRONTEND=noninteractive
+
+# install requirments using pip
+COPY requirements.txt .
+
+    # install python
+RUN apt-get update && apt-get install python 3.9 -y &&\
+    # installing tesseract ocr
+    apt-get install tesseract-ocr -y && \
+    rm -rf /var/cache/apt && \
+    apt-get clean \
+
+    # install dependencies
+RUN   pip install pipenv && \
+      pipenv shell && \
+      pip install --no-cache-dir -r requirements.txt -y && \
+    # downloading tesseract model data
+    cd /usr/local/share/tessdata && \
+    curl -o chi_sim.traineddata https://github.com/tesseract-ocr/tessdata/raw/4.00/chi_sim.traineddata && \
+    curl -o chi_tra.traineddata https://github.com/tesseract-ocr/tessdata/raw/4.00/chi_tra.traineddata && \
+    curl -o eng.traineddata https://github.com/tesseract-ocr/tessdata/raw/4.00/eng.traineddata
+
+
+#RUN apt-get update && apt-get install python 3.9 -y
+#
+#    # install dependencies
+#RUN pip install --no-cache-dir -r requirements.txt -y
+#
+#    # installing tesseract ocr
+#RUN apt-get install tesseract-ocr -y
+#
+#    # downloading tesseract model data
+#RUN cd /usr/local/share/tessdata && \
+#    curl -o chi_sim.traineddata https://github.com/tesseract-ocr/tessdata/raw/4.00/chi_sim.traineddata && \
+#    curl -o chi_tra.traineddata https://github.com/tesseract-ocr/tessdata/raw/4.00/chi_tra.traineddata && \
+#    curl -o eng.traineddata https://github.com/tesseract-ocr/tessdata/raw/4.00/eng.traineddata \
+
+EXPOSE 8501
+
+CMD ["pipenv", "run", "streamlit", "run", "mainapp.py"]
