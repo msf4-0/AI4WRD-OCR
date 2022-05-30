@@ -273,7 +273,7 @@ def mainApp():
                         if ocr_model == "tesseract":
                             result = ocr_tesseract(imgcrop)
                             for index in range(len(result['text'])):
-                                if result['conf'][index] >= confidence_level:
+                                if float(result['conf'][index]) >= confidence_level:
                                     st.session_state.text += result['text'][index] + " "
 
                         elif ocr_model == "easy_ocr":
