@@ -203,7 +203,10 @@ def mainApp():
                 st.session_state.previous_crops_length = None
             if frame is not None:
                 time_pre_screen_detection = time.time()
-                current_crops, crop_index = st.session_state['siftFlannAlgo'].process_video_frame(frame)
+
+                # find the screen and crops that best match the current screen
+                current_crops, screen_index = st.session_state['siftFlannAlgo'].process_video_frame(frame)
+
                 time_after_screen_detection = time.time()
                 time_for_screen_detection = time_after_screen_detection - time_pre_screen_detection
                 print(f"its taken {time_for_screen_detection} seconds to process the screens")
@@ -299,8 +302,8 @@ def mainApp():
                         post_render_text = time.time()
                         timeTakenRenderText += (post_render_text - pre_render_text)
 
-
-                        csvData = [datetime.now(), " Crop ID: %s" %(livecounter+1), st.session_state.text]
+                        # formatting data for csv and mqtt output
+                        csvData = [datetime.now(), " Screen: %s" %(screen_index), " Crop ID: %s" %(livecounter+1), st.session_state.text]
 
                         st.session_state.data.append(csvData)
                         if continuousSave == 1:
@@ -325,10 +328,6 @@ def mainApp():
                                     file_saving_status.error("Error saving file")
                             else:
                                 file_saving_status.error("Path not specified")
-
-
-
-
 
                         elif savecontCSV:
                             if path_to_save != '':
@@ -361,12 +360,12 @@ def mainApp():
 
                             df = pd.DataFrame(csvData)
 
-                            result = client.publish(mqtt_topic + str(crop_index), df.to_csv(index=False))
+                            result = client.publish(mqtt_topic + str(screen_index), df.to_csv(index=False))
 
                             # result: [0, 1]
                             status_mqtt = result[0]
                             if status_mqtt == 0:
-                                print(f"Send `{df.to_csv(index=False)}` to topic `{mqtt_topic + str(crop_index)}`")
+                                print(f"Send `{df.to_csv(index=False)}` to topic `{mqtt_topic + str(screen_index)}`")
                             else:
                                 print(f"Failed to send message to topic {mqtt_topic}")
                             # msg_count += 1
