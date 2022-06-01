@@ -42,20 +42,25 @@ def get_available_devices():
     return available_devices
 
 
-def get_frame(camera_choice):
-    # st.session_state.vid = cv2.VideoCapture(camera_choice, cv2.CAP_DSHOW)
-    _, frame = st.session_state.vid.read()
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+# def get_frame(camera_choice):
+#     # st.session_state.vid = cv2.VideoCapture(camera_choice, cv2.CAP_DSHOW)
+#     _, frame = st.session_state.vid.read()
+#     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+#
+#     # st.session_state['cap'] = ImageGrab.grab(bbox=(115, 143, 1069, 1083))
+#     # st.session_state['cap'].append(Image.fromarray(frame))]
+#     st.session_state['cap'].append(frame)
+#
+#     st.caption("Frame loaded.")
+#     for i in range(len(st.session_state['cap'])):
+#         st.image(st.session_state['cap'][i], caption=f'Frame number {i}')
 
-    # st.session_state['cap'] = ImageGrab.grab(bbox=(115, 143, 1069, 1083))
-    # st.session_state['cap'].append(Image.fromarray(frame))]
+def save_frame(frame):
     st.session_state['cap'].append(frame)
-
 
     st.caption("Frame loaded.")
     for i in range(len(st.session_state['cap'])):
         st.image(st.session_state['cap'][i], caption=f'Frame number {i}')
-
 
 def mainApp():
     # clearsessState()
@@ -114,7 +119,8 @@ def mainApp():
 
             if capture_screenshot:
                 # cv2.destroyAllWindows()
-                get_frame(camera_choice)
+                if "frame" in st.session_state:
+                    save_frame(st.session_state.frame)
                 # status.subheader("Frame loaded. Proceed to crop tool.")
 
             status.subheader("Video Preview")
@@ -123,6 +129,6 @@ def mainApp():
                 # vid.set(3, 1920)
                 # vid.set(4, 1080)
 
-                _, frame = st.session_state.vid.read()
-                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                frame_window2.image(frame)
+                _, st.session_state.frame = st.session_state.vid.read()
+                st.session_state.frame = cv2.cvtColor(st.session_state.frame, cv2.COLOR_BGR2RGB)
+                frame_window2.image(st.session_state.frame)

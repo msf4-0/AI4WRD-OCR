@@ -153,12 +153,12 @@ def mainApp():
         """
         status_mqtt = st.empty()
         mqtt_address = st.text_input('Mqtt Broker Address', 'broker.emqx.io')
+        mqtt_port = st.number_input('Mqtt Port', 1883)
         mqtt_topic = st.text_input('Mqtt topic to publish to', 'ai4wrd_output')
         publish_mqtt = st.button("Publish to Mqtt server")
 
         # mqtt test
         # broker = 'broker.emqx.io'
-        port = 1883
         # topic = "ai4wrd_output"
         client_id = f'python-mqtt-{random.randint(0, 1000)}'
         # username = 'emqx'
@@ -169,7 +169,7 @@ def mainApp():
 
         if publish_mqtt:
             if mqtt_address != "":
-                client = connect_mqtt(client_id, mqtt_address, port)
+                client = connect_mqtt(client_id, mqtt_address, mqtt_port)
 
 
         """
