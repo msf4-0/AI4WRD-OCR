@@ -61,8 +61,8 @@ def mainApp():
     # clearsessState()
     st.header("HDMI Capture")
     st.sidebar.image("resources/MSF-logo.gif")
-    st.sidebar.header("AI4WRD OCR Tool")
-    st.sidebar.write("Developed by MSF-4.0 at Selangor Human Resource Development Center")
+    st.sidebar.header("AI4WRD - OCR App")
+    st.sidebar.write("Developed and integrated by the MSF4.0 team at Selangor Human Resource Development Centre (SHRDC)")
 
     st.session_state.lang = st.selectbox(
         'Option to try to detect another language',

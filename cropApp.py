@@ -41,8 +41,8 @@ def mainApp():
 
     st.header("Cropping Tool")
     st.sidebar.image("resources/MSF-logo.gif")
-    st.sidebar.header("AI4WRD OCR Tool")
-    st.sidebar.write("Developed by MSF-4.0 at Selangor Human Resource Development Center")
+    st.sidebar.header("AI4WRD - OCR App")
+    st.sidebar.write("Developed and integrated by the MSF4.0 team at Selangor Human Resource Development Centre (SHRDC)")
     realtime_update = st.sidebar.checkbox(label="Update in Real Time", value=True)
     box_color = st.sidebar.color_picker(label="Box Color", value='#0000FF')
 

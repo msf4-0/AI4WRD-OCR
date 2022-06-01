@@ -80,8 +80,8 @@ def preprocess_images():
 def mainApp():
 
     st.sidebar.image("resources/MSF-logo.gif")
-    st.sidebar.header("AI4WRD OCR Tool")
-    st.sidebar.write("Developed by MSF-4.0 at Selangor Human Resource Development Center")
+    st.sidebar.header("AI4WRD - OCR App")
+    st.sidebar.write("Developed and integrated by the MSF4.0 team at Selangor Human Resource Development Centre (SHRDC)")
 
 
     # preprocessing images for algorithms
