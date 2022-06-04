@@ -1,13 +1,13 @@
-import cv2
 import time
-import streamlit as st
+import traceback
+
 import numpy as np
-from PIL import ImageGrab
+import streamlit as st
 from PIL import Image
-import matplotlib.pyplot as plt
 from streamlit_cropper import st_cropper
 
 from processFrame import CropData
+from saveLoad import save_configuration, load_configuration
 
 x_topleft = []
 x_bottomright = []
@@ -38,6 +38,8 @@ def clearsessState():
 def mainApp():
     # if 'crop_data_list' not in st.session_state:
     #     preProcessFrames()
+
+
 
     st.header("Cropping Tool")
     st.sidebar.image("resources/MSF-logo.gif")
@@ -101,17 +103,39 @@ def mainApp():
     #         left, top, width, height = tuple(map(int, rect.values()))
     #         st.write(rect) 
     #     return rect
+    save_load_location = st.text_input('Indicate path to save or load file', '')
+    saveConfiguration = st.button("Save screen and crop configuration")
+    loadConfiguration = st.button("Load screen and crop configuration")
 
-    if len(st.session_state.cap) > 0:
-        if 'crop_data_list' not in st.session_state:
-            st.session_state['crop_data_list'] = []
-            for i in range(len(st.session_state['cap'])):
-                st.session_state['crop_data_list'].append(CropData(st.session_state['cap'][i], i))
+    # load crop data list from configuration
+    if loadConfiguration:
+        try:
+            st.session_state['crop_data_list'] = load_configuration(save_load_location)
+        except Exception:
+            print(traceback.format_exc())
+
+
+    # else get crop data list from load app
+    if 'cap' in st.session_state:
+        if len(st.session_state['cap']) > 0:
+            if 'crop_data_list' not in st.session_state:
+                st.session_state['crop_data_list'] = []
+                for i in range(len(st.session_state['cap'])):
+                    st.session_state['crop_data_list'].append(CropData(st.session_state['cap'][i], i))
+
+    # only run cropping function if crop data list exists
+    if 'crop_data_list' in st.session_state:
+        if saveConfiguration:
+            crop_data_list = st.session_state['crop_data_list']
+            save_configuration(save_load_location, crop_data_list)
+
         index = st.selectbox(
             'Choose Image',
             [str(i) for i in range(len(st.session_state['crop_data_list']))])
         st.image(st.session_state['crop_data_list'][int(index)].frame)
         crop_app_process(realtime_update, box_color, zoom, st.session_state['crop_data_list'][int(index)])
+
+
 
 
 def crop_app_process(realtime_update, box_color, zoom, cropData):
@@ -124,11 +148,10 @@ def crop_app_process(realtime_update, box_color, zoom, cropData):
     #     # st.session_state['cap'] = ImageGrab.grab(bbox=(115, 143, 1069, 1083))
     #     st.session_state['cap'] = Image.fromarray(crop)
 
-    # _, frame = st.session_state.vid.read()
+    # _, frame = st.session_state['vid'].read()
 
     run = st.checkbox('Run')
     if run:
-    # if "potato" is "onion":
         if not realtime_update:
             st.write("Double click to save crop")
         return_type = 'box'
@@ -201,8 +224,8 @@ def crop_app_process(realtime_update, box_color, zoom, cropData):
             newsize = (rewidth, reheight)
             newcrop = cropped_img.resize(newsize)
 
-            st.session_state.d["FRAME_WINDOW%s" % counter] = st.image(newcrop)
+            st.session_state['d']["FRAME_WINDOW%s" % counter] = st.image(newcrop)
 
             counter += 1
 
-            # crop = ImageGrab.grab(bbox=(st.session_state.cropArr[counter].left, st.session_state.cropArr[counter].top, st.session_state.cropArr[counter].width, st.session_state.cropArr[counter].height))
+            # crop = ImageGrab.grab(bbox=(st.session_state['cropArr[counter].left, st.session_state['cropArr'][counter].top, st.session_state['cropArr'][counter].width, st.session_state['cropArr'][counter].height))

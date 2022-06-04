@@ -99,7 +99,7 @@ class SiftFlannAlgo:
         for i in range(len(self.algorithm_data_list)):
             if (frame_descriptors is None) or (self.algorithm_data_list[i] is None):
                 break
-            if(len(frame_descriptors) != 0 and len(self.algorithm_data_list[i]) != 0):
+            if len(frame_descriptors) != 0 and len(self.algorithm_data_list[i]) != 0:
                 matches = self.flann_matcher.knnMatch(frame_descriptors, self.algorithm_data_list[i], 2)
 
                 threshold = 0.7

@@ -1,6 +1,5 @@
 import cv2
 import streamlit as st
-from PIL import Image
 
 
 # x_topleft = []
@@ -14,7 +13,7 @@ from PIL import Image
 # @st.cache
 def clearsessState():
     # # Delete all the items in Session state
-    for key in st.session_state.keys():
+    for key in st.session_state['keys']():
         del st.session_state[key]
     mainApp()
 
@@ -43,8 +42,8 @@ def get_available_devices():
 
 
 # def get_frame(camera_choice):
-#     # st.session_state.vid = cv2.VideoCapture(camera_choice, cv2.CAP_DSHOW)
-#     _, frame = st.session_state.vid.read()
+#     # st.session_state['vid'] = cv2.VideoCapture(camera_choice, cv2.CAP_DSHOW)
+#     _, frame = st.session_state['vid'].read()
 #     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 #
 #     # st.session_state['cap'] = ImageGrab.grab(bbox=(115, 143, 1069, 1083))
@@ -69,7 +68,7 @@ def mainApp():
     st.sidebar.header("AI4WRD - OCR App")
     st.sidebar.write("Developed and integrated by the MSF4.0 team at Selangor Human Resource Development Centre (SHRDC)")
 
-    st.session_state.lang = st.selectbox(
+    st.session_state['lang'] = st.selectbox(
         'Option to try to detect another language',
         ['', 'Traditional Chinese', 'Simplified Chinese'])
 
@@ -78,10 +77,10 @@ def mainApp():
     #
     # if len(options) > 0:
     #     if "Chinese Simplified" in options:
-    #         st.session_state.lang = "Chi_sim"
+    #         st.session_state['lang = "Chi_sim"
     #         # st.write("Chinese selected")
     #     elif "Chinese Traditional" in options:
-    #         st.session_state.lang = "Chi_tra"
+    #         st.session_state['lang = "Chi_tra"
     #             # st.write("Chinese selected")
 
     # st.write('You selected:', options)
@@ -108,9 +107,9 @@ def mainApp():
 
         if run:
             st.session_state['camera_choice'] = camera_choice
-            st.session_state.vid = cv2.VideoCapture(camera_choice, cv2.CAP_DSHOW)
-            st.session_state.vid.set(3, 1280)
-            st.session_state.vid.set(4, 720)
+            st.session_state['vid'] = cv2.VideoCapture(camera_choice, cv2.CAP_DSHOW)
+            st.session_state['vid'].set(3, 1280)
+            st.session_state['vid'].set(4, 720)
 
             # if 'cap' not in st.session_state:
             # status.subheader("Frame Loading...")
@@ -120,7 +119,7 @@ def mainApp():
             if capture_screenshot:
                 # cv2.destroyAllWindows()
                 if "frame" in st.session_state:
-                    save_frame(st.session_state.frame)
+                    save_frame(st.session_state["frame"])
                 # status.subheader("Frame loaded. Proceed to crop tool.")
 
             status.subheader("Video Preview")
@@ -129,6 +128,6 @@ def mainApp():
                 # vid.set(3, 1920)
                 # vid.set(4, 1080)
 
-                _, st.session_state.frame = st.session_state.vid.read()
-                st.session_state.frame = cv2.cvtColor(st.session_state.frame, cv2.COLOR_BGR2RGB)
-                frame_window2.image(st.session_state.frame)
+                _, st.session_state['frame'] = st.session_state['vid'].read()
+                st.session_state['frame'] = cv2.cvtColor(st.session_state["frame"], cv2.COLOR_BGR2RGB)
+                frame_window2.image(st.session_state["frame"])

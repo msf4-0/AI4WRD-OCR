@@ -1,29 +1,20 @@
-import random
-
-import pytesseract
-import PIL
-import numpy
-import streamlit as st
-import cv2
-import json
-import time
-import numpy as np
-from PIL import ImageGrab
-from PIL import Image
-import matplotlib.pyplot as plt
-from streamlit_cropper import st_cropper
-import easyocr
-# import paho.mqtt.client as mqtt
-from PIL import Image, ImageEnhance
 import csv
+import random
+import time
 from datetime import datetime
 
-from paho.mqtt import client as mqtt_client
+import cv2
+import easyocr
+import numpy as np
 import pandas as pd
+import pytesseract
+import streamlit as st
+# import paho.mqtt.client as mqtt
+from PIL import Image
+from paho.mqtt import client as mqtt_client
+from pytesseract import Output
 
 from processFrame import SiftFlannAlgo
-
-from pytesseract import Output
 
 
 def ocr_tesseract(crop, ):
@@ -32,13 +23,13 @@ def ocr_tesseract(crop, ):
     :return: a string containing the read text
     '''
 
-    if st.session_state.lang == "Traditional Chinese":
+    if st.session_state['lang'] == "Traditional Chinese":
         custom_config = r'--oem 3 -l eng+chi_tra --psm 6'
-    elif st.session_state.lang == "Simplified Chinese":
+    elif st.session_state['lang'] == "Simplified Chinese":
         print("orwel123")
         print("Simplified Chinese")
         custom_config = r'--oem 3 -l eng+chi_sim --psm 6'
-    elif st.session_state.lang == "":
+    elif st.session_state['lang'] == "":
         custom_config = r'--oem 3 --psm 6'
     return pytesseract.image_to_data(crop, config=custom_config, output_type=Output.DICT)
 
@@ -95,12 +86,12 @@ def mainApp():
 
 
     # Initialize the models
-    if st.session_state.lang == "Simplified Chinese":
+    if st.session_state['lang'] == "Simplified Chinese":
         reader = easyocr.Reader(['ch_sim','en'], gpu=True)
-    elif st.session_state.lang == "Traditional Chinese":
+    elif st.session_state['lang'] == "Traditional Chinese":
         reader = easyocr.Reader(['ch_tra', 'en'], gpu=True)
         #st.write("Reading Chinese")
-    elif st.session_state.lang == "":
+    elif st.session_state['lang'] == "":
         reader = easyocr.Reader(['en'], gpu=True)
         #st.write("Not reading chinese")
 
@@ -192,16 +183,16 @@ def mainApp():
             a = time.time()
 
             # code to get frames
-            _, frame = st.session_state.vid.read()
+            _, frame = st.session_state['vid'].read()
             if frame is None:
-                st.session_state.vid = cv2.VideoCapture(st.session_state.camera_choice, cv2.CAP_DSHOW)
-                st.session_state.vid.set(3, 1280)
-                st.session_state.vid.set(4, 720)
+                st.session_state['vid'] = cv2.VideoCapture(st.session_state['camera_choice'], cv2.CAP_DSHOW)
+                st.session_state['vid'].set(3, 1280)
+                st.session_state['vid'].set(4, 720)
 
             # preprocess frame and get crops
             # todo: run the right algo depending on data in cropData
             if "previous_crops_length" not in st.session_state:
-                st.session_state.previous_crops_length = None
+                st.session_state['previous_crops_length'] = None
             if frame is not None:
                 time_pre_screen_detection = time.time()
 
@@ -219,25 +210,25 @@ def mainApp():
                 livecounter = 0
                 if len(current_crops) == 0:
                     status.subheader("No crops made.")
-                    if st.session_state.previous_crops_length is not None:
-                        if st.session_state.previous_crops_length > len(current_crops):
-                            for i in range(st.session_state.previous_crops_length):
-                                st.session_state.d1[f"FRAME_WINDOW{i}"].empty()
-                                st.session_state.d1[f"placeholderOCR{i}"].empty()
+                    if st.session_state['previous_crops_length'] is not None:
+                        if st.session_state['previous_crops_length'] > len(current_crops):
+                            for i in range(st.session_state['previous_crops_length']):
+                                st.session_state['d1'][f"FRAME_WINDOW{i}"].empty()
+                                st.session_state['d1'][f"placeholderOCR{i}"].empty()
                 else:
                     status.subheader("")
                     # clearing old crops
-                    if st.session_state.previous_crops_length is not None:
-                        if st.session_state.previous_crops_length > len(current_crops):
+                    if st.session_state['previous_crops_length'] is not None:
+                        if st.session_state['previous_crops_length'] > len(current_crops):
                             print("removing previous data")
-                            for i in range(len(current_crops), st.session_state.previous_crops_length):
-                                st.session_state.d1[f"FRAME_WINDOW{i}"].empty()
-                                st.session_state.d1[f"placeholderOCR{i}"].empty()
-                    st.session_state.previous_crops_length = len(current_crops)
+                            for i in range(len(current_crops), st.session_state['previous_crops_length']):
+                                st.session_state['d1'][f"FRAME_WINDOW{i}"].empty()
+                                st.session_state['d1'][f"placeholderOCR{i}"].empty()
+                    st.session_state['previous_crops_length'] = len(current_crops)
                     # Adding more st images as needed
                     while counter < len(current_crops):
-                        st.session_state.d1[f"FRAME_WINDOW{counter}"] = st.image([])
-                        st.session_state.d1[f"placeholderOCR{counter}"] = st.empty()
+                        st.session_state['d1'][f"FRAME_WINDOW{counter}"] = st.image([])
+                        st.session_state['d1'][f"placeholderOCR{counter}"] = st.empty()
                         counter += 1
 
                     ocr_time = 0.0
@@ -263,28 +254,28 @@ def mainApp():
                         imgcrop = np.array(newcrop)
 
                         preImageTime = time.time()
-                        st.session_state.d1["FRAME_WINDOW%s" % livecounter].image(imgcrop)
+                        st.session_state['d1']["FRAME_WINDOW%s" % livecounter].image(imgcrop)
                         postImageTime = time.time()
                         timeTakenImageRender += (postImageTime - preImageTime)
 
                         # result = reader.readtext(imgcrop)
                         # custom_config = r'--oem 3 --psm 6'
-                        oldtext = st.session_state.text
+                        oldtext = st.session_state['text']
 
-                        st.session_state.text = ""
+                        st.session_state['text'] = ""
 
                         time_pre_ocr = time.time()
                         if ocr_model == "tesseract":
                             result = ocr_tesseract(imgcrop)
                             for index in range(len(result['text'])):
                                 if float(result['conf'][index]) >= confidence_level:
-                                    st.session_state.text += result['text'][index] + " "
+                                    st.session_state['text'] += result['text'][index] + " "
 
                         elif ocr_model == "easy_ocr":
                             result = ocr_easyOcr(imgcrop, reader)
                             for res in result:
                                 if res[2] >= confidence_level:
-                                    st.session_state.text += res[1] + " "
+                                    st.session_state['text'] += res[1] + " "
 
                         time_post_ocr = time.time()
                         ocr_time += (time_post_ocr - time_pre_ocr)
@@ -292,21 +283,21 @@ def mainApp():
 
 
 
-                        strIDprint = "Crop " + str(livecounter+1) + ":      " + st.session_state.text
+                        strIDprint = "Crop " + str(livecounter+1) + ":      " + st.session_state['text']
 
 
                         """
                         formatting output
                         """
                         pre_render_text = time.time()
-                        st.session_state.d1["placeholderOCR%s" % livecounter].write(strIDprint)
+                        st.session_state['d1']["placeholderOCR%s" % livecounter].write(strIDprint)
                         post_render_text = time.time()
                         timeTakenRenderText += (post_render_text - pre_render_text)
 
                         # formatting data for csv and mqtt output
-                        csvData = [datetime.now(), " Screen: %s" %(screen_index), " Crop ID: %s" %(livecounter+1), st.session_state.text]
+                        csvData = [datetime.now(), " Screen: %s" %(screen_index), " Crop ID: %s" %(livecounter+1), st.session_state['text']]
 
-                        st.session_state.data.append(csvData)
+                        st.session_state['data'].append(csvData)
                         if continuousSave == 1:
                             savecontCSV = 1
 
@@ -320,7 +311,7 @@ def mainApp():
                                         writer.writerow(header)
 
                                         # write multiple rows
-                                        writer.writerows(st.session_state.data)
+                                        writer.writerows(st.session_state['data'])
                                         saveallCSV = False
                                     file_saving_status.success("File Saved!")
 
@@ -340,7 +331,7 @@ def mainApp():
                                             writer.writerow(header)
                                             continuousSave = 1
                                         with open(path_to_save + ".csv", 'a', encoding='UTF8', newline='') as f:
-                                            csv.writer(f).writerows(st.session_state.data)
+                                            csv.writer(f).writerows(st.session_state['data'])
                                     else:
                                         with open(path_to_save + ".csv", 'a', encoding='UTF8', newline='') as f:
                                             csv.writer(f).writerow(csvData)
