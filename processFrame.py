@@ -1,5 +1,8 @@
 import cv2
-
+"""
+Class that encapsulates the data class CropData and algorithms that match 
+images and crops
+"""
 
 # todo add a way to call the algorithms depending on the algorithm in crop data
 
@@ -14,9 +17,8 @@ class CropData:
         self.num = num
         if crops is None:
             self.crops = []
-        else: 
+        else:
             self.crops = crops
-
 
     def __str__(self):
         return f'Crop {self.num}'
@@ -43,7 +45,7 @@ class CropData:
 
 class SiftFlannAlgo:
     """
-    match using sift features and the flann algorithm
+    Match using sift features and the flann algorithm
     Attributes:
         num (int):
         frame_list (CropData):list of saved crops and corresponding data
@@ -63,15 +65,13 @@ class SiftFlannAlgo:
         # Initializing detectors and flann
         self.sift_detector = cv2.SIFT_create()
         self.flann_matcher = cv2.DescriptorMatcher_create(cv2.DescriptorMatcher_FLANNBASED)
-
+        self.initialize_algorithm_data()
 
     def __str__(self):
         return "SiftFlannAlgo"
 
-
     def initialize_algorithm_data(self):
         self.algorithm_data_list = [self.precompute(aframe.frame) for aframe in self.frame_list]
-
 
     def precompute(self, frame):
         """
@@ -90,7 +90,6 @@ class SiftFlannAlgo:
         :return: the crops which data best matches the data of the current video stream, index of the crop
         :rtype:
         """
-
         video_frame = cv2.cvtColor(video_frame, cv2.COLOR_BGR2GRAY)
         _, frame_descriptors = self.sift_detector.detectAndCompute(video_frame, None)
 
@@ -113,42 +112,11 @@ class SiftFlannAlgo:
                 if max_match_ratio < current_match_ratio:
                     max_match_index = i
                     max_match_ratio = current_match_ratio
-                # print(max_match_ratio)
-                # print(current_match_ratio)
+
             else:
                 pass
 
-        # print(max_match_index)
-        # print(self.frame_list[max_match_index].crops)
         return self.frame_list[max_match_index].crops, max_match_index
-#
-#
-# def get_crop_views(crops, frame):
-#     """
-#     leftco = st.session_state.cropArr[counter]["left"]
-#     widthco = st.session_state.cropArr[counter]["width"]
-#     topco = st.session_state.cropArr[counter]["top"]
-#     heightco = st.session_state.cropArr[counter]["height"]
-#
-#     # st.write(leftco)
-#     # st.write(widthco)
-#     # st.wprorite(topco)
-#     # st.write(heightco)
-#
-#     cap_arr = np.array(st.session_state.cap)
-#
-#     imgcrop = cap_arr[topco:topco + heightco, leftco:leftco + widthco]
-#     cropped_img = Image.fromarray(imgcrop)
-#     """
-#
-#     for crop in crops:
-#         pass
-
-
-
-
-
-
 
 
 '''

@@ -5,10 +5,11 @@ import livestreamApp
 
 class MultiApp:
     def __init__(self):
+        # List of seperate pages/applications
         self.apps = []
 
     def add_app(self, title, func):
-        """Adds a new application.
+        """Adds a new application/page.
         Parameters
         ----------
         func:
@@ -24,7 +25,7 @@ class MultiApp:
 
 
     def run(self):
-        # app = st.sidebar.radio(
+        # gui element to select the page/application
         app = st.selectbox(
             'Navigation',
             self.apps,
@@ -33,13 +34,15 @@ class MultiApp:
         app['function']()
 
 
+# Initialising the app
 mainApp = MultiApp()
 
+# Setting the header for the page
 st.title("""
     AI4WRD OCR App
-
 """)
 
+# Adding individual pages to the dropdown menu
 
 mainApp.add_app("Load frame", loadApp.mainApp)
 mainApp.add_app("Crop", cropApp.mainApp)
