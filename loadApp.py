@@ -71,7 +71,7 @@ def mainApp():
 
     # Gui select box for the user to select the language model to use
     st.session_state['lang'] = st.selectbox(
-        'Option to try to detect another language',
+        'Language to detect',
         ['', 'Traditional Chinese', 'Simplified Chinese'])
 
     # Get available devices and allow the user to select them using a drop-down menu
