@@ -3,6 +3,7 @@ import loadApp
 import cropApp
 import livestreamApp
 
+
 class MultiApp:
     def __init__(self):
         # List of seperate pages/applications
@@ -21,8 +22,6 @@ class MultiApp:
             "title": title,
             "function": func
         })
-
-
 
     def run(self):
         # gui element to select the page/application
@@ -43,11 +42,8 @@ st.title("""
 """)
 
 # Adding individual pages to the dropdown menu
-
 mainApp.add_app("Load frame", loadApp.mainApp)
 mainApp.add_app("Crop", cropApp.mainApp)
 mainApp.add_app("OCR Livestream", livestreamApp.mainApp)
 
-
 mainApp.run()
-

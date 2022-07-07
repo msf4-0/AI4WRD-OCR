@@ -7,7 +7,8 @@ video stream and crops
 # todo add a way to call the algorithms depending on the algorithm in crop data
 
 class CropData:
-    """ class encapsulating the crops and corresponding data
+    """
+    class encapsulating the crops and corresponding data
     """
 
     def __init__(self, frame, num, crops=None):
