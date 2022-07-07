@@ -1,14 +1,13 @@
 import cv2
 """
 Class that encapsulates the data class CropData and algorithms that match 
-images and crops
+video stream and crops
 """
 
 # todo add a way to call the algorithms depending on the algorithm in crop data
 
 class CropData:
     """ class encapsulating the crops and corresponding data
-    Attributes:
     """
 
     def __init__(self, frame, num, crops=None):
@@ -117,11 +116,3 @@ class SiftFlannAlgo:
                 pass
 
         return self.frame_list[max_match_index].crops, max_match_index
-
-
-'''
-v 2 
-text localization 
-then ocr
-z
-'''
