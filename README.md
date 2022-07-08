@@ -24,13 +24,15 @@ AI4WRD is an application that performs Data Extraction through Optical Character
 4. Ability to save and load crop configurations
 5. Output to both CSV and through the MQTT protocol
 
+A more comprehensive introduction to AI4WRD is available at the AI4WRD-OCR Wiki! Portal to [AI4WRD-OCR wiki](https://github.com/msf4-0/AI4WRD-OCR/wiki). 
+
 ## Installation Instructions 
 ### Using Conda
 1. Install conda, https://www.anaconda.com/products/distribution make sure to set environment variables
 2. Create an environment with python 3.9
 3. Install tesseract at https://github.com/UB-Mannheim/tesseract/wiki, install the chinese language models too
 4. Set environment variable for tesseract https://tesseract-ocr.github.io/tessdoc/Installation.html
-5. Download git https://git-scm.com/download/win
+5. Download git https://git-scm.com/download/
 6. Open git cli at a folder where you want to install ai4wrd
 7. Run ```git clone https://github.com/msf4-0/AI4WRD-OCR```
 8. Start the anaconda environment as a cmd and cd to the AI4WRD folder
@@ -42,8 +44,8 @@ AI4WRD is an application that performs Data Extraction through Optical Character
 ### Using Pipenv
 1. Install tesseract at https://github.com/UB-Mannheim/tesseract/wiki, install the chinese language models too
 2. Set environment variable for tesseract https://tesseract-ocr.github.io/tessdoc/Installation.html
-3. Install python3.9, make sure to tick "set environment variable" box https://www.python.org/downloads/release/python-3913/
-4. Download git https://git-scm.com/download/win
+3. Install python3.9, either manually set the environment variables or tick the "set environment variable" during installation https://www.python.org/downloads/release/python-3913/
+4. Download git https://git-scm.com/download/
 5. Open git cli at a folder where you want to install ai4wrd 
 6. Run ```git clone https://github.com/msf4-0/AI4WRD-OCR```
 7. Start cmd as administrator and cd to the folder AI4WRD-OCR
@@ -54,12 +56,12 @@ AI4WRD is an application that performs Data Extraction through Optical Character
 12. Run ```export PYTHONIOENCODING=utf8``` if on Linux or OSX or ```set PYTHONIOENCODING=utf8``` if on Windows.
 13. Run ```streamlit run mainapp.py```
 
-
 ## Brief User Guide
-A more comprehensive introduction to AI4WRD is available at the AI4WRD-OCR Wiki! Portal to [AI4WRD-OCR wiki](https://github.com/msf4-0/AI4WRD-OCR/wiki). 
+For a more detailed guide head to the [AI4WRD-OCR wiki](https://github.com/msf4-0/AI4WRD-OCR/wiki). 
 
 ### Application startup
 Run the application by first activating your environment, then running the following command in a terminal: ```streamlit run mainapp.py```
+
 ### Load Frame
 ![captureScreen1](https://user-images.githubusercontent.com/72961684/177915062-fa9076e2-561d-4cb5-ab7a-9dc66065fbac.png)
 1. When starting up the app, you will arrive at the home page, "Load Frame"
@@ -69,10 +71,7 @@ Run the application by first activating your environment, then running the follo
 5. Click capture screenshot to take a screenshot of the current video
 6. Proceed to the crop tool after capturing all required screenshots
 
-[//]: # (https://user-images.githubusercontent.com/99723226/154652833-6d167a30-0c73-4be0-9e6b-5a599fe437b6.mp4)
-
 ### Cropping tool
-
 ![cropScreen1](https://user-images.githubusercontent.com/72961684/177915070-c0756106-99c7-4f05-a35c-2098b2b6e883.png)
 1. In the "Crop" page, the first frame of the livestream will be visible to you with a box within
 2. In the dropdown menu "choose image", you can choose which one of your previous screenshots you would want to specify the crops for
@@ -85,11 +84,7 @@ Run the application by first activating your environment, then running the follo
 9. Proceed to the next page when you have finished cropping for all desired screenshots
 10. You may save or load crop configuration using the text box and buttons at the top of the page
 
-[//]: # (https://user-images.githubusercontent.com/99723226/154652861-25c9a5d2-d991-4075-97f6-338b1e52baa7.mp4)
-
-
 ### OCR on Livestream
-
 ![liveStream](https://user-images.githubusercontent.com/72961684/177915077-95867da8-88cc-4d5e-9adf-a314602e72e4.png)
 1. In the "OCR Livestream" page, check the done crop checkbox to begin livestream
 2. The livestream from your capture device will be visible at the top of the page
@@ -102,8 +97,6 @@ Run the application by first activating your environment, then running the follo
 9. The csv file will be saved at the specified path
 10. The "Publish to mqtt button" allows you to publish detected data to a mqtt broker on the Address, Port and Topic specified. Note: if there are multiple crops they will be published to different topics based on the topic name you specified according to the format <topic specified\><crop number\>. For instance, if there are 2 crops and the topic specified is ai4wrdOutput, the text from crop 1 will be published to ai4wrdOutput1 and the text from crop 2 will be publishe to ai4wrOutput2
 11. Note that the zoom tool is still available for you to enlarge crops
-
-[//]: # (https://user-images.githubusercontent.com/99723226/154652921-c9522fd2-6df0-4b29-9992-6d93ef3d956a.mp4)
 
 ## Licensing
 This software is licensed under the GNU GPLv3 LICENSE © Selangor Human Resource Development Centre. 2021. All Rights Reserved. Users that want to modify and distribute versions of DL4JRA and do not wish to conform to obligations to share the source code are free to contact SHRDC for alternative licensing options.
@@ -118,6 +111,10 @@ easy-ocr library: https://github.com/JaidedAI/EasyOCR
 <br />
 tesseract library: https://github.com/tesseract-ocr/tesseract
 
+[//]: # (Previous demo videos, included for posterity)
+[//]: # (https://user-images.githubusercontent.com/99723226/154652833-6d167a30-0c73-4be0-9e6b-5a599fe437b6.mp4)
+[//]: # (https://user-images.githubusercontent.com/99723226/154652861-25c9a5d2-d991-4075-97f6-338b1e52baa7.mp4)
+[//]: # (https://user-images.githubusercontent.com/99723226/154652921-c9522fd2-6df0-4b29-9992-6d93ef3d956a.mp4)
 
 
 
