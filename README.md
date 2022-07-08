@@ -24,7 +24,7 @@ AI4WRD is an application that performs Data Extraction through Optical Character
 4. Ability to save and load crop configurations
 5. Output to both CSV and through the MQTT protocol
 
-## Windows Installation
+## Installation Instructions 
 ### Using Conda
 1. Install conda, https://www.anaconda.com/products/distribution make sure to set environment variables
 2. Create an environment with python 3.9
@@ -36,7 +36,7 @@ AI4WRD is an application that performs Data Extraction through Optical Character
 8. Start the anaconda environment as a cmd and cd to the AI4WRD folder
 9. Run ```pip install -r requirements.txt```
 10. Run ```pip install torch==1.10.2+cu113 torchvision==0.11.3+cu113 torchaudio===0.10.2+cu113 -f https://download.pytorch.org/whl/cu113/torch_stable.html```
-11. Run ```export PYTHONIOENCODING=utf8```
+11. Run ```export PYTHONIOENCODING=utf8``` if on Linux or OSX or ```set PYTHONIOENCODING=utf8``` if on Windows.
 12. Run ```streamlit run mainapp.py```
 
 ### Using Pipenv
@@ -51,17 +51,16 @@ AI4WRD is an application that performs Data Extraction through Optical Character
 9. Run ```pipenv shell```
 10. Run ```pip install -r requirements.txt```
 11. Run ```pip install torch==1.10.2+cu113 torchvision==0.11.3+cu113 torchaudio===0.10.2+cu113 -f https://download.pytorch.org/whl/cu113/torch_stable.html```
-12. Run ```export PYTHONIOENCODING=utf8```
+12. Run ```export PYTHONIOENCODING=utf8``` if on Linux or OSX or ```set PYTHONIOENCODING=utf8``` if on Windows.
 13. Run ```streamlit run mainapp.py```
 
 
-## User Guide
-A comprehensive introduction to AI4WRD is available at the AI4WRD-OCR Wiki! Portal to [AI4WRD-OCR wiki](https://github.com/msf4-0/AI4WRD-OCR/wiki). 
+## Brief User Guide
+A more comprehensive introduction to AI4WRD is available at the AI4WRD-OCR Wiki! Portal to [AI4WRD-OCR wiki](https://github.com/msf4-0/AI4WRD-OCR/wiki). 
 
-###Brief User Guide
-#### Application startup
+### Application startup
 Run the application by first activating your environment, then running the following command in a terminal: ```streamlit run mainapp.py```
-#### Load Frame
+### Load Frame
 ![captureScreen1](https://user-images.githubusercontent.com/72961684/177915062-fa9076e2-561d-4cb5-ab7a-9dc66065fbac.png)
 1. When starting up the app, you will arrive at the home page, "Load Frame"
 2. This page gives you the option to select the videocapture device using a dropdown menu
@@ -97,19 +96,21 @@ Run the application by first activating your environment, then running the follo
 3. The livestream of the cropped sections will also appear below the main livestream
 4. The OCR result of the crop is displayed below each crop
 5. The "Choose Model" dropdown menu allows you to select the model used for ocr
-6. The "OCR Confidence Cut-Off" allows you to filter out detected text below the defined threshold 
+6. The "OCR Confidence Cut-Off" widget allows you to filter out detected text below the defined threshold 
 7. The "Save Continuous to csv" button will allow you to continuously save new OCR data into a csv file
 8. The "Save Previous to csv" button allows you to save all the previous OCR data to a csv file
-9. The csv file will be saved as the specified path
+9. The csv file will be saved at the specified path
 10. The "Publish to mqtt button" allows you to publish detected data to a mqtt broker on the Address, Port and Topic specified. Note: if there are multiple crops they will be published to different topics based on the topic name you specified according to the format <topic specified\><crop number\>. For instance, if there are 2 crops and the topic specified is ai4wrdOutput, the text from crop 1 will be published to ai4wrdOutput1 and the text from crop 2 will be publishe to ai4wrOutput2
 11. Note that the zoom tool is still available for you to enlarge crops
 
 [//]: # (https://user-images.githubusercontent.com/99723226/154652921-c9522fd2-6df0-4b29-9992-6d93ef3d956a.mp4)
 
-
-
 ## Licensing
 This software is licensed under the GNU GPLv3 LICENSE © Selangor Human Resource Development Centre. 2021. All Rights Reserved. Users that want to modify and distribute versions of DL4JRA and do not wish to conform to obligations to share the source code are free to contact SHRDC for alternative licensing options.
+
+## Contributing
+We welcome any and all contributions through pull requests, whether it be bug fixes or new features.
+
 ## Citation
 streamlit-cropper component: https://github.com/turner-anderson/streamlit-cropper 
 <br />
