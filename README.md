@@ -56,7 +56,9 @@ AI4WRD is an application that performs Data Extraction through Optical Character
 
 
 ## User Guide
-##### Application startup
+### Application startup
+
+![captureScreen1](https://user-images.githubusercontent.com/72961684/177915062-fa9076e2-561d-4cb5-ab7a-9dc66065fbac.png)
 1. When starting up the app, you will arrive at the home page, "Load Frame"
 2. This page gives you the option to select the videocapture device using a dropdown menu
 3. "Language to detect" dropdown menu allows you to define the language that you want to perform OCR on.
@@ -66,7 +68,9 @@ AI4WRD is an application that performs Data Extraction through Optical Character
 
 [//]: # (https://user-images.githubusercontent.com/99723226/154652833-6d167a30-0c73-4be0-9e6b-5a599fe437b6.mp4)
 
-##### Cropping tool
+### Cropping tool
+
+![cropScreen1](https://user-images.githubusercontent.com/72961684/177915070-c0756106-99c7-4f05-a35c-2098b2b6e883.png)
 1. In the "Crop" page, the first frame of the livestream will be visible to you with a box within
 2. In the dropdown menu choose image, you can choose which one of your previous screenshots you would want to specify the crops for
 3. Drag the box to crop the section that you would want to perform ocr on
@@ -82,7 +86,9 @@ AI4WRD is an application that performs Data Extraction through Optical Character
 [//]: # (https://user-images.githubusercontent.com/99723226/154652861-25c9a5d2-d991-4075-97f6-338b1e52baa7.mp4)
 
 
-##### OCR on Livestream
+### OCR on Livestream
+
+![liveStream](https://user-images.githubusercontent.com/72961684/177915077-95867da8-88cc-4d5e-9adf-a314602e72e4.png)
 1. In the "OCR Livestream" page, check the done crop checkbox to begin livestream
 2. The livestream from your capture device will be visible at the top of the page
 3. The livestream of the cropped sections will also appear below the main livestream
