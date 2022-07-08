@@ -56,8 +56,12 @@ AI4WRD is an application that performs Data Extraction through Optical Character
 
 
 ## User Guide
-### Application startup
+A comprehensive introduction to AI4WRD is available at the AI4WRD-OCR Wiki! Portal to [AI4WRD-OCR wiki](https://github.com/msf4-0/AI4WRD-OCR/wiki). 
 
+###Brief User Guide
+#### Application startup
+Run the application by first activating your environment, then running the following command in a terminal: ```streamlit run mainapp.py```
+#### Load Frame
 ![captureScreen1](https://user-images.githubusercontent.com/72961684/177915062-fa9076e2-561d-4cb5-ab7a-9dc66065fbac.png)
 1. When starting up the app, you will arrive at the home page, "Load Frame"
 2. This page gives you the option to select the videocapture device using a dropdown menu
@@ -72,16 +76,15 @@ AI4WRD is an application that performs Data Extraction through Optical Character
 
 ![cropScreen1](https://user-images.githubusercontent.com/72961684/177915070-c0756106-99c7-4f05-a35c-2098b2b6e883.png)
 1. In the "Crop" page, the first frame of the livestream will be visible to you with a box within
-2. In the dropdown menu choose image, you can choose which one of your previous screenshots you would want to specify the crops for
+2. In the dropdown menu "choose image", you can choose which one of your previous screenshots you would want to specify the crops for
 3. Drag the box to crop the section that you would want to perform ocr on
 4. The OCR will be performed on these cropped sections on a later page
-5. Select the "Save Crop" button to save the crop
-6. Saved crops will appear at the bottom of the page 
-7. You may continue to add and store more crops
-8. The zoom function is available on the sidebar for you to enlarge crops if the text appears to be too small 
-9. Note that the OCR accuracy can be affected depending on the size and clarity of your cropped text
-10. Proceed to the next page when you have finished cropping for all desired screenshots
-11. You may save or load crop configuration using the text box and buttons at the top of the page
+5. Select the "Save Crop" button to save the crop, saved crops will appear at the bottom of the page 
+6. You may continue to add and store more crops
+7. The zoom function is available on the sidebar for you to enlarge crops if the text appears to be too small 
+8. Note that the OCR accuracy can be affected depending on the size and clarity of your cropped text
+9. Proceed to the next page when you have finished cropping for all desired screenshots
+10. You may save or load crop configuration using the text box and buttons at the top of the page
 
 [//]: # (https://user-images.githubusercontent.com/99723226/154652861-25c9a5d2-d991-4075-97f6-338b1e52baa7.mp4)
 
@@ -97,7 +100,7 @@ AI4WRD is an application that performs Data Extraction through Optical Character
 6. The "OCR Confidence Cut-Off" allows you to filter out detected text below the defined threshold 
 7. The "Save Continuous to csv" button will allow you to continuously save new OCR data into a csv file
 8. The "Save Previous to csv" button allows you to save all the previous OCR data to a csv file
-9. The csv file will be saved under the folder in which you saved the Python program files
+9. The csv file will be saved as the specified path
 10. The "Publish to mqtt button" allows you to publish detected data to a mqtt broker on the Address, Port and Topic specified. Note: if there are multiple crops they will be published to different topics based on the topic name you specified according to the format <topic specified\><crop number\>. For instance, if there are 2 crops and the topic specified is ai4wrdOutput, the text from crop 1 will be published to ai4wrdOutput1 and the text from crop 2 will be publishe to ai4wrOutput2
 11. Note that the zoom tool is still available for you to enlarge crops
 
