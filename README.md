@@ -99,7 +99,7 @@ Run the application by first activating your environment, then running the follo
 11. Note that the zoom tool is still available for you to enlarge crops
 
 ## Licensing
-This software is licensed under the GNU GPLv3 LICENSE © Selangor Human Resource Development Centre. 2021. All Rights Reserved. Users that want to modify and distribute versions of DL4JRA and do not wish to conform to obligations to share the source code are free to contact SHRDC for alternative licensing options.
+This software is licensed under the GNU GPLv3 LICENSE © Selangor Human Resource Development Centre. 2021. All Rights Reserved. Users that want to modify and distribute versions of AI4WRD and do not wish to conform to obligations to share the source code are free to contact SHRDC for alternative licensing options.
 
 ## Contributing
 We welcome any and all contributions through pull requests, whether it be bug fixes or new features.
